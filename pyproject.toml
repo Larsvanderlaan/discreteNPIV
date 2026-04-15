@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "discreteNPIV"
+version = "0.1.0"
+description = "Research-grade estimators for discrete nonparametric instrumental variables with many weak instruments."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26"]
+license = "MIT"
+authors = [
+  { name = "Lars van der Laan" }
+]
+keywords = [
+  "econometrics",
+  "instrumental-variables",
+  "nonparametric",
+  "causal-inference",
+  "many-weak-instruments"
+]
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
