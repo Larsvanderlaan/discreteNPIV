@@ -49,7 +49,7 @@
                 outcomes that remains valid under surrogate-outcome
                 confounding. Rather than regressing long-term outcomes directly
                 on surrogates, the package uses historical experiment arms as
-                instruments to deconfound the surrogate-to-long-term map, then
+                instruments to identify the surrogate-to-long-term map, then
                 evaluates that map on the novel experiment.
               </p>
             </div>
@@ -83,7 +83,7 @@
               <span>
                   <code>X_hist</code>, <code>Y_hist</code>, and historical arm
                   assignments provide surrogate outcomes, long-term outcomes,
-                  and the instrument levels used for deconfounding.
+                  and the instrument levels used in the NPIV step.
                 </span>
               </article>
               <article class="metric-card">
@@ -110,8 +110,9 @@
           <section>
             <p class="mini-label">Scope</p>
             <p class="panel-note">
-              The wrapper layer learns a confounding-robust surrogate-to-long-term
-              map and then averages that map over the novel surrogate
+              The wrapper layer targets functionals of the structural outcome
+              model through the feature or basis representation <code>X</code>,
+              then evaluates those functionals on the novel surrogate
               distribution.
             </p>
           </section>
@@ -132,9 +133,8 @@
               </p>
             </div>
             <p class="section-side-note">
-              The wrappers target either a long-term mean potential outcome for
-              one novel arm or a long-term average treatment effect for a novel
-              treated-versus-control comparison.
+              The wrapper supports both single-arm means and treated-versus-control
+              contrasts.
             </p>
           </div>
 
@@ -162,7 +162,8 @@
                 surrogates in historical data and transports that fit to the
                 novel experiment. That requires no unmeasured confounding
                 between surrogates and long-term outcomes. Here, historical
-                experiment arms are used as instruments to deconfound that map.
+                experiment arms are used as instruments to identify the
+                surrogate-to-long-term map under the paper’s assumptions.
               </p>
             </article>
           </div>
@@ -173,7 +174,9 @@
               For one novel arm, the target is <code>E[h(X_new)]</code>. For a
               novel treated and control arm, the target is
               <code>E[h(X_new_treated)] - E[h(X_new_control)]</code>, where
-              <code>h</code> is the deconfounded surrogate-to-long-term map.
+              <code>h</code> denotes the structural outcome model represented
+              through the surrogate feature or basis representation
+              <code>X</code>.
             </p>
           </aside>
         </section>
@@ -437,7 +440,7 @@ print(effect.selected.method_name)</code></pre>
                 </li>
                 <li>
                   Instead it uses historical experiment arms as instruments to
-                  deconfound the surrogate-to-long-term relationship.
+                  identify the surrogate-to-long-term relationship.
                 </li>
                 <li>
                   Credibility depends on historical experiments generating

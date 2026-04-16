@@ -321,9 +321,9 @@ print(result.selected.estimate, result.selected.se)</code></pre>
                 <article class="detail-card">
                   <h3><code>fit_structural_nuisance</code></h3>
                   <p>
-                    Estimates the structural function <code>h(x)</code>, that
-                    is, the minimum-norm NPIV solution for the counterfactual
-                    regression <code>E[Y(x)]</code>.
+                    Estimates the structural nuisance, that is, the
+                    minimum-norm NPIV solution for the structural map
+                    represented through <code>X</code>.
                   </p>
                 </article>
                 <article class="detail-card">
@@ -385,11 +385,10 @@ print(result.selected.estimate, result.selected.se)</code></pre>
             <article class="card">
               <h3>Structural fit</h3>
               <p>
-                The structural fit estimates the structural function
-                <code>h(x)</code>, the minimum-norm NPIV solution for the
-                counterfactual regression <code>E[Y(x)]</code>. The returned
-                object includes the selected estimator, the npJIVE fit, the
-                2SLS baseline, and tuning details.
+                The structural fit estimates the minimum-norm NPIV solution for
+                the structural map represented through <code>X</code>. The
+                returned object includes the selected estimator, the npJIVE
+                fit, the 2SLS baseline, and tuning details.
               </p>
             </article>
             <article class="card">
@@ -437,10 +436,9 @@ print(result.selected.estimate, result.selected.se)</code></pre>
               <p>
                 The core estimand is a linear functional of the minimum-norm
                 NPIV solution, represented in the API by the target average
-                <code>E[h(X_new)]</code>. When the instrument is sufficiently
-                rich and strong so that the structural function is point
-                identified, this same target can be interpreted as the
-                corresponding functional of the true structural function.
+                <code>E[h(X_new)]</code>. This keeps the package focused on
+                functionals of the structural map rather than full point
+                identification of that map.
               </p>
             </article>
             <article class="definition-card">
