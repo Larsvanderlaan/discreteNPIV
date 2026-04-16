@@ -40,7 +40,7 @@
 
       <header class="hero">
         <section class="hero-copy">
-          <p class="eyebrow">Flagship Application</p>
+          <p class="eyebrow">Application Layer</p>
           <div class="hero-grid">
             <div>
               <h1>Long-term causal inference with surrogates and historical experiments.</h1>
@@ -62,9 +62,9 @@
             </div>
           </div>
           <div class="hero-actions">
-            <a class="button button-primary" href="#surrogate-quickstart">Surrogate Quickstart</a>
+            <a class="button button-primary" href="#surrogate-quickstart">Illustrative Example</a>
             <a class="button button-secondary" href="#encoding">Encoding And Diagnostics</a>
-            <a class="button button-secondary" href="./index.html">Back To Package Overview</a>
+            <a class="button button-secondary" href="./index.html">Package Overview</a>
           </div>
           <ul class="hero-pills">
             <li>Historical arms become the instrument</li>
@@ -121,11 +121,12 @@
           <div class="section-heading">
             <div>
               <p class="eyebrow">Problem Setup</p>
-              <h2>What data situation is this page built for?</h2>
+              <h2>Problem setting</h2>
               <p class="section-intro">
-                The motivating use case is simple: a new experiment with only
-                short-term surrogate outcomes today, and historical experiments
-                where both surrogate and long-term outcomes were observed.
+                The motivating use case is a new experiment with only
+                short-term surrogate outcomes, together with historical
+                experiments where both surrogate and long-term outcomes were
+                observed.
               </p>
             </div>
             <p class="section-side-note">
@@ -296,7 +297,7 @@
         <section class="section" id="surrogate-quickstart">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Runnable Example</p>
+              <p class="eyebrow">Illustrative Example</p>
               <h2>Estimate a long-term treatment effect from surrogate-only novel data</h2>
               <p class="section-intro">
                 The snippet below is the surrogate quickstart from the current
@@ -390,8 +391,8 @@ print(effect.selected.method_name)</code></pre>
         <section class="section" id="assumptions">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Assumptions In Plain Language</p>
-              <h2>What has to be plausible for the causal interpretation to be credible?</h2>
+              <p class="eyebrow">Assumptions</p>
+              <h2>Conditions for a credible causal interpretation</h2>
               <p class="section-intro">
                 The package does not prove a causal design is valid. It is built
                 for settings where the paper’s assumptions are a plausible
@@ -438,17 +439,17 @@ print(effect.selected.method_name)</code></pre>
         </section>
 
         <section class="reference-card" id="references">
-          <p class="eyebrow">References And Return Links</p>
-          <h3>Continue with the package overview or the paper</h3>
+          <p class="eyebrow">References And Navigation</p>
+          <h3>Related resources</h3>
           <p>
             This page covers the surrogate application path; the low-level NPIV
             interface remains on the main package page.
           </p>
           <div class="reference-grid" style="margin-top: 16px;">
-            <a href="./index.html">Return to package overview</a>
-            <a href="https://arxiv.org/abs/2505.07729">Open the paper</a>
-            <a href="https://github.com/Larsvanderlaan/discreteNPIV">Open the GitHub repository</a>
-            <a href="#encoding">Review encoding diagnostics</a>
+            <a href="./index.html">Package overview</a>
+            <a href="https://arxiv.org/abs/2505.07729">Paper</a>
+            <a href="https://github.com/Larsvanderlaan/discreteNPIV">GitHub repository</a>
+            <a href="#encoding">Encoding diagnostics</a>
           </div>
           <ul class="reference-list" style="margin-top: 18px;">
             <li>
@@ -466,7 +467,7 @@ print(effect.selected.method_name)</code></pre>
           <div class="footer-links">
             <a class="footer-link" href="./index.html#core-npiv">Core NPIV</a>
             <a class="footer-link" href="./index.html#api">API</a>
-            <a class="footer-link" href="#surrogate-quickstart">Surrogate Quickstart</a>
+            <a class="footer-link" href="#surrogate-quickstart">Illustrative Example</a>
           </div>
         </section>
       </main>

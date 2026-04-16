@@ -64,8 +64,8 @@
           </div>
           <div class="hero-actions">
             <a class="button button-primary" href="#install">Install</a>
-            <a class="button button-secondary" href="#core-npiv">Core NPIV Quickstart</a>
-            <a class="button button-secondary" href="./long-term.html">Long-Term Application</a>
+            <a class="button button-secondary" href="#core-npiv">Core NPIV Interface</a>
+            <a class="button button-secondary" href="./long-term.html">Surrogate Application</a>
           </div>
           <ul class="hero-pills">
             <li>Many weak discrete instruments</li>
@@ -76,7 +76,7 @@
 
         <aside class="hero-panel">
           <section>
-            <p class="mini-label">At A Glance</p>
+            <p class="mini-label">Overview</p>
             <div class="stat-list">
               <article class="metric-card">
                 <strong>Two entry paths</strong>
@@ -98,9 +98,9 @@
                 </span>
               </article>
               <article class="metric-card">
-                <strong>Flagship application</strong>
+                <strong>Primary application</strong>
                 <span>
-                  Long-term causal inference with surrogates is a flagship
+                  Long-term causal inference with surrogates is a primary
                   application of the package, not the whole package.
                 </span>
               </article>
@@ -123,8 +123,8 @@
         <section class="section" id="entry-paths">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Start Here</p>
-              <h2>Which interface should you use?</h2>
+              <p class="eyebrow">Interface Selection</p>
+              <h2>Choosing an entry path</h2>
               <p class="section-intro">
                 The package separates a low-level NPIV interface from a
                 surrogate application layer. Use the toggle below to choose the
@@ -158,10 +158,11 @@
             <article class="route-panel" data-interface-panel="core">
               <h3>Use the core API when the NPIV problem is already explicit.</h3>
               <p>
-                Start here if you already have observed covariates or basis
-                features <code>X</code>, a discrete instrument <code>Z</code>,
-                outcomes <code>Y</code>, and a target covariate sample
-                <code>X_new</code> defining the linear functional of interest.
+                Use this route when you already have observed covariates or
+                basis features <code>X</code>, a discrete instrument
+                <code>Z</code>, outcomes <code>Y</code>, and a target covariate
+                sample <code>X_new</code> defining the linear functional of
+                interest.
               </p>
               <ul class="api-list">
                 <li><code>fit_structural_nuisance</code></li>
@@ -173,16 +174,16 @@
                 <span class="pill">Dual / Riesz nuisance</span>
                 <span class="pill">Debiased functional inference</span>
               </div>
-              <a class="route-cta" href="#core-npiv">Go to core quickstart</a>
+              <a class="route-cta" href="#core-npiv">See core interface</a>
             </article>
 
             <article class="route-panel is-hidden" data-interface-panel="longterm">
               <h3>Use the surrogate API when historical experiments are the instrument.</h3>
               <p>
-                Start here if you have historical experiments with surrogate and
-                long-term outcomes, plus a novel experiment that contributes only
-                surrogate outcomes. The wrappers translate this application
-                structure into the core NPIV estimand.
+                Use this route when you have historical experiments with
+                surrogate and long-term outcomes, plus a novel experiment that
+                contributes only surrogate outcomes. The wrappers translate this
+                application structure into the core NPIV estimand.
               </p>
               <ul class="api-list">
                 <li><code>encode_experiment_arms</code></li>
@@ -194,7 +195,7 @@
                 <span class="pill">Novel surrogates -> X_new</span>
                 <span class="pill">Support diagnostics</span>
               </div>
-              <a class="route-cta" href="./long-term.html">Open long-term page</a>
+              <a class="route-cta" href="./long-term.html">See surrogate interface</a>
             </article>
           </div>
         </section>
@@ -268,7 +269,7 @@
 
           <div class="grid-2">
             <article class="surface-card">
-              <p class="mini-label">Quickstart</p>
+              <p class="mini-label">Example</p>
               <pre class="code-block"><code>from discreteNPIV import (
     estimate_average_functional,
     fit_dual_nuisance,
@@ -405,8 +406,8 @@ print(result.selected.estimate, result.selected.se)</code></pre>
         <section class="section" id="theory">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Theory In Plain Language</p>
-              <h2>What “many weak instruments” means here</h2>
+              <p class="eyebrow">Theoretical Framing</p>
+              <h2>Many weak instruments</h2>
               <p class="section-intro">
                 The package is built for settings where the instrument is
                 discrete and the number of instrument levels can grow with the
@@ -507,16 +508,16 @@ print(result.selected.estimate, result.selected.se)</code></pre>
 
         <section class="reference-card" id="references">
           <p class="eyebrow">References</p>
-          <h3>Paper, repository, and companion page</h3>
+          <h3>Related resources</h3>
           <p>
             The long-term application has its own page because it is a distinct
             entry path built on the same core NPIV estimand.
           </p>
           <div class="reference-grid" style="margin-top: 16px;">
-            <a href="https://arxiv.org/abs/2505.07729">Open the paper</a>
-            <a href="https://github.com/Larsvanderlaan/discreteNPIV">Open the GitHub repository</a>
-            <a href="./long-term.html">Open the long-term surrogate page</a>
-            <a href="#core-npiv">Return to core quickstart</a>
+            <a href="https://arxiv.org/abs/2505.07729">Paper</a>
+            <a href="https://github.com/Larsvanderlaan/discreteNPIV">GitHub repository</a>
+            <a href="./long-term.html">Long-term causal inference page</a>
+            <a href="#core-npiv">Core NPIV section</a>
           </div>
           <ul class="reference-list" style="margin-top: 18px;">
             <li>
