@@ -321,21 +321,25 @@ print(result.selected.estimate, result.selected.se)</code></pre>
                 <article class="detail-card">
                   <h3><code>fit_structural_nuisance</code></h3>
                   <p>
-                    Fits the primal nuisance for the minimum-norm NPIV solution.
+                    Estimates the structural function <code>h(x)</code>, that
+                    is, the minimum-norm NPIV solution for the counterfactual
+                    regression <code>E[Y(x)]</code>.
                   </p>
                 </article>
                 <article class="detail-card">
                   <h3><code>fit_dual_nuisance</code></h3>
                   <p>
-                    Fits the dual or Riesz nuisance for the target feature
-                    distribution defined by <code>X_new</code>.
+                    Estimates the dual or Riesz representer nuisance for the
+                    target functional defined by <code>X_new</code>. This is
+                    the nuisance needed to debias the plug-in functional.
                   </p>
                 </article>
                 <article class="detail-card">
                   <h3><code>estimate_average_functional</code></h3>
                   <p>
-                    Fits both nuisances and returns the debiased average linear
-                    functional with a standard error and confidence interval.
+                    Combines the structural and dual nuisances to estimate the
+                    debiased average functional <code>E[h(X_new)]</code>,
+                    together with a standard error and confidence interval.
                   </p>
                 </article>
               </div>
@@ -349,15 +353,16 @@ print(result.selected.estimate, result.selected.se)</code></pre>
               <p class="eyebrow">Workflow</p>
               <h2>The package is organized around nuisance fitting plus a debiased functional estimator.</h2>
               <p class="section-intro">
-                The notation map in the repository connects the paper language,
-                the core API, and the surrogate wrappers. At the site level,
-                the estimator stack is the picture below.
+                The core estimator has three pieces: estimate the structural
+                function <code>h</code>, estimate the dual or Riesz nuisance
+                for the target functional, and combine them in a debiased
+                estimator of <code>E[h(X_new)]</code>.
               </p>
             </div>
             <p class="section-side-note">
-              In the paper-to-code map, the structural nuisance corresponds to
-              the minimum-norm solution and the dual nuisance corresponds to the
-              Riesz representer for the target functional.
+              Here <code>X_new</code> is the target covariate sample. It
+              defines the average functional of interest, not a new outcome
+              sample.
             </p>
           </div>
 
@@ -369,9 +374,10 @@ print(result.selected.estimate, result.selected.se)</code></pre>
               height="320"
             />
             <figcaption class="figure-caption">
-              Observed data and the target covariate sample feed the structural
-              and dual nuisance problems, which are then combined in
-              <code>estimate_average_functional</code>.
+              Observed data <code>(X, Z, Y)</code> identify the structural
+              function and the dual nuisance, while <code>X_new</code> defines
+              the target average <code>E[h(X_new)]</code>. These pieces are
+              combined in <code>estimate_average_functional</code>.
             </figcaption>
           </figure>
 
@@ -379,25 +385,29 @@ print(result.selected.estimate, result.selected.se)</code></pre>
             <article class="card">
               <h3>Structural fit</h3>
               <p>
-                The structural nuisance returns coefficients for the selected
-                estimator, the npJIVE fit, and the 2SLS baseline, together with
-                tuning information and the observed instrument levels.
+                The structural fit estimates the structural function
+                <code>h(x)</code>, the minimum-norm NPIV solution for the
+                counterfactual regression <code>E[Y(x)]</code>. The returned
+                object includes the selected estimator, the npJIVE fit, the
+                2SLS baseline, and tuning details.
               </p>
             </article>
             <article class="card">
               <h3>Dual fit</h3>
               <p>
-                The dual fit mirrors the same selected / npJIVE / 2SLS structure
-                for the target functional side of the problem.
+                The dual fit estimates the dual or Riesz representer nuisance
+                for the target average defined by <code>X_new</code>. This is
+                the nuisance required for the debiasing step, and it is returned
+                with the same selected / npJIVE / 2SLS structure.
               </p>
             </article>
             <article class="card">
               <h3>Inference result</h3>
               <p>
-                The final <code>NPIVInferenceResult</code> exposes
-                <code>selected</code>, <code>npjive</code>,
-                <code>baseline_2sls</code>, <code>structural_fit</code>, and
-                <code>dual_fit</code>.
+                The final <code>NPIVInferenceResult</code> reports the debiased
+                estimate of <code>E[h(X_new)]</code> together with standard
+                errors, confidence intervals, and the fitted structural and dual
+                nuisance objects.
               </p>
             </article>
           </div>
@@ -423,43 +433,34 @@ print(result.selected.estimate, result.selected.se)</code></pre>
 
           <div class="theory-grid">
             <article class="definition-card">
-              <h3>Functionals, not full point identification</h3>
+              <h3>Target functional and interpretation</h3>
               <p>
-                The package targets average linear functionals of the
-                minimum-norm NPIV solution. This is why the public API is built
-                around <code>X_new</code> and an average functional rather than a
-                claim of full point identification of the structural map.
+                The core estimand is a linear functional of the minimum-norm
+                NPIV solution, represented in the API by the target average
+                <code>E[h(X_new)]</code>. When the instrument is sufficiently
+                rich and strong so that the structural function is point
+                identified, this same target can be interpreted as the
+                corresponding functional of the true structural function.
               </p>
             </article>
             <article class="definition-card">
               <h3>npJIVE is the many-instrument correction</h3>
               <p>
-                The paper-to-code map explicitly identifies npJIVE as the
-                leave-one-out or jackknife many-instrument correction, with a
-                grouped 2SLS baseline fitted alongside it.
+                We use jackknife estimation to remove the bias that arises with
+                many weak instruments. The package reports this npJIVE estimate
+                alongside a grouped 2SLS baseline.
               </p>
             </article>
             <article class="definition-card">
-              <h3>LOO and tuning are separate ideas</h3>
+              <h3>Bias correction and tuning</h3>
               <p>
-                Group-level leave-one-out means are used inside the nuisance
-                construction, while regularization is selected by a separate
-                stratified K-fold cross-validation routine. The package
-                documentation emphasizes not conflating the two.
+                Group-level leave-one-out means are used inside the npJIVE
+                nuisance construction, while regularization parameters are
+                chosen by a stratified K-fold cross-validation routine.
               </p>
             </article>
           </div>
 
-          <aside class="callout" style="margin-top: 18px;">
-            <span class="callout-title">Implementation note</span>
-            <p>
-              The implementation uses an explicit singleton-group fallback in
-              the leave-one-out grouped means so the estimator remains
-              numerically defined even when some instrument groups are tiny. The
-              docs also caution that singleton groups should usually be treated
-              carefully from a research-design perspective.
-            </p>
-          </aside>
         </section>
 
         <section class="section" id="api">

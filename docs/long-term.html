@@ -45,11 +45,12 @@
             <div>
               <h1>Long-term causal inference with surrogates and historical experiments.</h1>
               <p class="lede">
-                This page is for users with historical experiments, surrogate
-                outcomes, and a novel experiment whose long-term outcome is not
-                yet available. The package treats historical experiment arms as
-                the instrument and novel surrogate distributions as the target
-                covariate law.
+                The goal is to learn a surrogate-based index for long-term
+                outcomes that remains valid under surrogate-outcome
+                confounding. Rather than regressing long-term outcomes directly
+                on surrogates, the package uses historical experiment arms as
+                instruments to deconfound the surrogate-to-long-term map, then
+                evaluates that map on the novel experiment.
               </p>
             </div>
             <div class="hero-art">
@@ -67,9 +68,9 @@
             <a class="button button-secondary" href="./index.html">Package Overview</a>
           </div>
           <ul class="hero-pills">
-            <li>Historical arms become the instrument</li>
-            <li>Novel experiment contributes surrogate outcomes only</li>
-            <li>Support diagnostics are surfaced explicitly</li>
+            <li>Historical experiment arms are the instrument</li>
+            <li>Novel experiment contributes surrogates only</li>
+            <li>Targets are long-term means and treatment effects</li>
           </ul>
         </section>
 
@@ -78,25 +79,25 @@
             <p class="mini-label">Inputs</p>
             <div class="stat-list">
               <article class="metric-card">
-                <strong>Historical data</strong>
-                <span>
+              <strong>Historical data</strong>
+              <span>
                   <code>X_hist</code>, <code>Y_hist</code>, and historical arm
-                  assignments provide the surrogate features, long-term outcomes,
-                  and instrument levels.
+                  assignments provide surrogate outcomes, long-term outcomes,
+                  and the instrument levels used for deconfounding.
                 </span>
               </article>
               <article class="metric-card">
-                <strong>Novel data</strong>
-                <span>
+              <strong>Novel data</strong>
+              <span>
                   <code>X_new</code> or
                   <code>X_new_treated</code> and
-                  <code>X_new_control</code> provide surrogate-only target
-                  distributions for the novel arm or novel experiment.
+                  <code>X_new_control</code> provide the surrogate distribution
+                  for the novel arm or novel treated and control arms.
                 </span>
               </article>
               <article class="metric-card">
-                <strong>Outputs</strong>
-                <span>
+              <strong>Outputs</strong>
+              <span>
                   The wrappers return
                   <code>LongTermMeanResult</code> or
                   <code>LongTermEffectResult</code>, each carrying the selected,
@@ -109,8 +110,9 @@
           <section>
             <p class="mini-label">Scope</p>
             <p class="panel-note">
-              These wrappers translate application-native inputs into the core
-              NPIV estimand rather than replacing the core estimators.
+              The wrapper layer learns a confounding-robust surrogate-to-long-term
+              map and then averages that map over the novel surrogate
+              distribution.
             </p>
           </section>
         </aside>
@@ -123,15 +125,16 @@
               <p class="eyebrow">Problem Setup</p>
               <h2>Problem setting</h2>
               <p class="section-intro">
-                The motivating use case is a new experiment with only
-                short-term surrogate outcomes, together with historical
-                experiments where both surrogate and long-term outcomes were
-                observed.
+                The target setting is a novel experiment where long-term
+                outcomes have not yet been observed, together with historical
+                experiments where both surrogates and long-term outcomes were
+                recorded.
               </p>
             </div>
             <p class="section-side-note">
-              Targets are a long-term mean for one novel arm or a long-term
-              treatment effect for a novel experiment.
+              The wrappers target either a long-term mean potential outcome for
+              one novel arm or a long-term average treatment effect for a novel
+              treated-versus-control comparison.
             </p>
           </div>
 
@@ -139,29 +142,40 @@
             <article class="card">
               <h3>Novel experiment</h3>
               <p>
-                The new experiment may only reveal short-term measures such as
-                clicks, sessions, conversion proxies, or early retention
-                markers.
+                The novel experiment contributes only short-term surrogates,
+                such as clicks, sessions, conversion proxies, or early
+                retention markers.
               </p>
             </article>
             <article class="card">
               <h3>Historical experiments</h3>
               <p>
-                Historical experiments provide the joint observation of
-                surrogate outcomes and long-term outcomes, together with
-                experiment-arm assignments that shifted the surrogate
-                distribution.
+                Historical experiments provide surrogate outcomes, long-term
+                outcomes, and randomized arm assignments that shift surrogates
+                exogenously.
               </p>
             </article>
             <article class="card">
-              <h3>Target parameter</h3>
+              <h3>Why IV instead of naive surrogate regression</h3>
               <p>
-                For one novel arm, the target is <code>E[h(X_new)]</code>. For a
-                novel treated and control arm, the target is
-                <code>E[h(X_new_treated)] - E[h(X_new_control)]</code>.
+                A naive surrogate-index approach regresses long-term outcomes on
+                surrogates in historical data and transports that fit to the
+                novel experiment. That requires no unmeasured confounding
+                between surrogates and long-term outcomes. Here, historical
+                experiment arms are used as instruments to deconfound that map.
               </p>
             </article>
           </div>
+
+          <aside class="callout" style="margin-top: 18px;">
+            <span class="callout-title">Target estimands</span>
+            <p>
+              For one novel arm, the target is <code>E[h(X_new)]</code>. For a
+              novel treated and control arm, the target is
+              <code>E[h(X_new_treated)] - E[h(X_new_control)]</code>, where
+              <code>h</code> is the deconfounded surrogate-to-long-term map.
+            </p>
+          </aside>
         </section>
 
         <section class="section" id="mapping">
@@ -170,16 +184,16 @@
               <p class="eyebrow">Surrogate-To-NPIV Map</p>
               <h2>How the application is translated into the core NPIV problem</h2>
               <p class="section-intro">
-                The package’s wrapper interface is direct: historical experiment
-                arms become the discrete instrument, historical surrogate vectors
-                become <code>X_hist</code>, historical long-term outcomes become
-                <code>Y_hist</code>, and the novel surrogate sample becomes
-                <code>X_new</code>.
+                The wrapper translates the surrogate problem into the core NPIV
+                problem by using historical experiment arms as the discrete
+                instrument.
               </p>
             </div>
             <p class="section-side-note">
-              The same package can therefore expose both a low-level NPIV
-              interface and an application-native causal wrapper.
+              In the core notation, historical surrogate vectors are
+              <code>X_hist</code>, historical long-term outcomes are
+              <code>Y_hist</code>, and the novel surrogate sample is the target
+              sample <code>X_new</code>.
             </p>
           </div>
 
@@ -191,9 +205,9 @@
               height="340"
             />
             <figcaption class="figure-caption">
-              Historical experiments provide exogenous surrogate variation,
-              while the novel experiment supplies the target surrogate
-              distribution.
+              Historical experiments provide the instrument and identify the
+              surrogate-to-long-term map; the novel experiment provides the
+              target surrogate distribution on which that map is evaluated.
             </figcaption>
           </figure>
 
@@ -224,15 +238,14 @@
               <p class="eyebrow">Encoding And Diagnostics</p>
               <h2>Past experiments become the instrument through explicit encoding</h2>
               <p class="section-intro">
-                The encoding guide is intentionally strict. It distinguishes
-                single-arm historical designs from overlapping historical
-                experiments and treats sparse overlap cells as design issues to
-                surface.
+                Encoding determines the discrete instrument used in the NPIV
+                step. The main distinction is between one historical arm per
+                unit and overlapping historical experiments.
               </p>
             </div>
             <p class="section-side-note">
-              The package does not silently pool or merge sparse overlap
-              categories in v1.
+              Sparse overlap cells are reported explicitly rather than merged
+              automatically.
             </p>
           </div>
 
@@ -300,10 +313,9 @@
               <p class="eyebrow">Illustrative Example</p>
               <h2>Estimate a long-term treatment effect from surrogate-only novel data</h2>
               <p class="section-intro">
-                The snippet below is the surrogate quickstart from the current
-                README. It shows the interface for a novel treated and control
-                arm after historical surrogates and long-term outcomes have been
-                assembled.
+                The example below shows the wrapper interface for estimating a
+                long-term treatment effect from historical experiments and a
+                surrogate-only novel experiment.
               </p>
             </div>
             <p class="section-side-note">
@@ -394,14 +406,14 @@ print(effect.selected.method_name)</code></pre>
               <p class="eyebrow">Assumptions</p>
               <h2>Conditions for a credible causal interpretation</h2>
               <p class="section-intro">
-                The package does not prove a causal design is valid. It is built
-                for settings where the paper’s assumptions are a plausible
-                approximation.
+                A causal interpretation requires the historical experiments to
+                generate relevant exogenous variation in surrogates and the
+                novel target to be supported by that historical variation.
               </p>
             </div>
             <p class="section-side-note">
-              The package can still run when these conditions are weak, but the
-              causal interpretation becomes weaker.
+              The estimator can be computed outside this regime, but the causal
+              interpretation then becomes less credible.
             </p>
           </div>
 
@@ -410,28 +422,26 @@ print(effect.selected.method_name)</code></pre>
               <p class="mini-label">Key assumptions</p>
               <ul class="assumption-list">
                 <li>Historical experiment arms provide exogenous shifts in surrogate outcomes.</li>
-                <li>Historical long-term outcomes help identify the surrogate-to-long-term map.</li>
+                <li>Those shifts are informative enough to identify the surrogate-to-long-term map.</li>
                 <li>The novel experiment contributes the target surrogate distribution.</li>
-                <li>The novel target has enough support relative to historical experiment-induced surrogate variation.</li>
+                <li>The target surrogate distribution is supported by the historical experiment-induced variation.</li>
               </ul>
             </article>
 
             <article class="surface-card">
-              <p class="mini-label">Support and implementation notes</p>
+              <p class="mini-label">Practical interpretation</p>
               <ul class="assumption-list">
                 <li>
-                  The package is most credible when the novel arm’s surrogate
-                  distribution is reasonably represented by historical
-                  experiment-arm variation.
+                  The method does not assume that surrogates are unconfounded
+                  with long-term outcomes in historical data.
                 </li>
                 <li>
-                  When overlap produces many tiny cells, that is a design-support
-                  problem, not just a nuisance implementation detail.
+                  Instead it uses historical experiment arms as instruments to
+                  deconfound the surrogate-to-long-term relationship.
                 </li>
                 <li>
-                  Leave-one-out or jackknife grouped means are used inside the
-                  npJIVE nuisance construction, while regularization is tuned by
-                  a separate stratified K-fold routine.
+                  Credibility depends on historical experiments generating
+                  enough relevant surrogate variation for the novel target.
                 </li>
               </ul>
             </article>
@@ -442,8 +452,8 @@ print(effect.selected.method_name)</code></pre>
           <p class="eyebrow">References And Navigation</p>
           <h3>Related resources</h3>
           <p>
-            This page covers the surrogate application path; the low-level NPIV
-            interface remains on the main package page.
+            This page covers the surrogate application layer. The low-level
+            NPIV interface remains on the main package page.
           </p>
           <div class="reference-grid" style="margin-top: 16px;">
             <a href="./index.html">Package overview</a>
@@ -460,8 +470,8 @@ print(effect.selected.method_name)</code></pre>
               <code>docs/loo_jackknife.md</code>.
             </li>
             <li>
-              For the low-level paper-to-code notation map, see the package
-              overview page and the current notation note in the repository.
+              For the low-level NPIV notation map, see the package overview page
+              and the notation note in the repository.
             </li>
           </ul>
           <div class="footer-links">
