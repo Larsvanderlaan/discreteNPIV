@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-labelledby="title desc">
+  <title id="title">discreteNPIV badge</title>
+  <desc id="desc">Circular academic badge showing the core NPIV ingredients X, Z, Y, X_new and the npJIVE workflow.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffaf2"/>
+      <stop offset="55%" stop-color="#eef6f2"/>
+      <stop offset="100%" stop-color="#f4e2cb"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a7b72"/>
+      <stop offset="100%" stop-color="#bb8347"/>
+    </linearGradient>
+    <style>
+      .ink { fill: #17313a; }
+      .muted { fill: #5b717a; }
+      .accent { fill: #1a7b72; }
+      .warm { fill: #bb8347; }
+      .panel { fill: rgba(255,255,255,0.88); stroke: rgba(23,49,58,0.10); stroke-width: 2; }
+      .label { font: 700 22px 'Space Grotesk', Arial, sans-serif; letter-spacing: 0.04em; }
+      .small { font: 600 14px 'Space Grotesk', Arial, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+      .serif { font: 600 30px 'Source Serif 4', Georgia, serif; letter-spacing: -0.02em; }
+      .line { fill: none; stroke: url(#ring); stroke-width: 12; stroke-linecap: round; }
+      .thin { fill: none; stroke: rgba(23,49,58,0.18); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 8 10; }
+    </style>
+  </defs>
+
+  <circle cx="240" cy="240" r="226" fill="url(#bg)"/>
+  <circle cx="240" cy="240" r="219" fill="none" stroke="url(#ring)" stroke-width="12"/>
+  <circle cx="240" cy="240" r="176" fill="none" stroke="rgba(23,49,58,0.10)" stroke-width="2"/>
+
+  <path class="thin" d="M240 60 L240 420"/>
+  <path class="thin" d="M60 240 L420 240"/>
+
+  <rect class="panel" x="166" y="177" width="148" height="126" rx="28"/>
+  <text x="240" y="214" text-anchor="middle" class="small muted">many weak instruments</text>
+  <text x="240" y="252" text-anchor="middle" class="serif ink">npJIVE</text>
+  <text x="240" y="280" text-anchor="middle" class="small accent">debiased functional</text>
+
+  <path class="line" d="M141 132 C177 122, 196 118, 218 142"/>
+  <path class="line" d="M339 132 C303 122, 284 118, 262 142"/>
+  <path class="line" d="M141 348 C177 358, 196 362, 218 338"/>
+  <path class="line" d="M339 348 C303 358, 284 362, 262 338"/>
+
+  <circle cx="129" cy="120" r="42" fill="rgba(255,255,255,0.86)" stroke="rgba(23,49,58,0.10)" stroke-width="2"/>
+  <text x="129" y="128" text-anchor="middle" class="label ink">X</text>
+  <text x="129" y="156" text-anchor="middle" class="small muted">features</text>
+
+  <circle cx="351" cy="120" r="42" fill="rgba(255,255,255,0.86)" stroke="rgba(23,49,58,0.10)" stroke-width="2"/>
+  <text x="351" y="128" text-anchor="middle" class="label ink">Z</text>
+  <text x="351" y="156" text-anchor="middle" class="small muted">instrument</text>
+
+  <circle cx="129" cy="360" r="42" fill="rgba(255,255,255,0.86)" stroke="rgba(23,49,58,0.10)" stroke-width="2"/>
+  <text x="129" y="368" text-anchor="middle" class="label ink">Y</text>
+  <text x="129" y="396" text-anchor="middle" class="small muted">outcome</text>
+
+  <circle cx="351" cy="360" r="52" fill="rgba(255,255,255,0.86)" stroke="rgba(23,49,58,0.10)" stroke-width="2"/>
+  <text x="351" y="352" text-anchor="middle" class="label ink">X</text>
+  <text x="368" y="345" class="small warm">new</text>
+  <text x="351" y="392" text-anchor="middle" class="small muted">target law</text>
+</svg>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-labelledby="title desc">
+  <title id="title">Long-term causal inference badge</title>
+  <desc id="desc">Circular badge showing historical experiment arms, surrogate outcomes, and long-term target estimation.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffaf3"/>
+      <stop offset="45%" stop-color="#eef6f1"/>
+      <stop offset="100%" stop-color="#f6e5d1"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a7b72"/>
+      <stop offset="100%" stop-color="#bb8347"/>
+    </linearGradient>
+    <style>
+      .ink { fill: #17313a; }
+      .muted { fill: #5b717a; }
+      .small { font: 600 14px 'Space Grotesk', Arial, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+      .label { font: 700 22px 'Space Grotesk', Arial, sans-serif; letter-spacing: 0.02em; }
+      .serif { font: 600 28px 'Source Serif 4', Georgia, serif; letter-spacing: -0.02em; }
+      .card { fill: rgba(255,255,255,0.88); stroke: rgba(23,49,58,0.10); stroke-width: 2; }
+      .arrow { fill: none; stroke: url(#accent); stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { fill: none; stroke: rgba(23,49,58,0.18); stroke-width: 3; stroke-dasharray: 7 8; }
+    </style>
+  </defs>
+
+  <circle cx="240" cy="240" r="226" fill="url(#bg)"/>
+  <circle cx="240" cy="240" r="219" fill="none" stroke="url(#accent)" stroke-width="12"/>
+  <circle cx="240" cy="240" r="176" fill="none" stroke="rgba(23,49,58,0.10)" stroke-width="2"/>
+
+  <rect class="card" x="69" y="122" width="126" height="108" rx="22"/>
+  <text x="132" y="152" text-anchor="middle" class="small muted">historical</text>
+  <text x="132" y="182" text-anchor="middle" class="serif ink">arms</text>
+  <text x="132" y="207" text-anchor="middle" class="small muted">pricing:treatment</text>
+  <text x="132" y="226" text-anchor="middle" class="small muted">ranking:baseline</text>
+
+  <rect class="card" x="69" y="252" width="126" height="108" rx="22"/>
+  <text x="132" y="281" text-anchor="middle" class="small muted">surrogates</text>
+  <path class="thin" d="M96 334 C114 309, 126 304, 144 321 C162 338, 175 332, 180 315"/>
+  <path class="thin" d="M92 320 C111 303, 125 294, 145 301 C164 308, 173 298, 181 286"/>
+  <path class="thin" d="M92 346 C112 329, 127 335, 142 349 C157 363, 171 354, 182 333"/>
+
+  <rect class="card" x="218" y="175" width="132" height="130" rx="26"/>
+  <text x="284" y="205" text-anchor="middle" class="small muted">structural map</text>
+  <text x="284" y="243" text-anchor="middle" class="serif ink">h(X)</text>
+  <text x="284" y="270" text-anchor="middle" class="small muted">learned from</text>
+  <text x="284" y="289" text-anchor="middle" class="small muted">historical variation</text>
+
+  <rect class="card" x="369" y="156" width="56" height="69" rx="18"/>
+  <text x="397" y="184" text-anchor="middle" class="small muted">new</text>
+  <text x="397" y="207" text-anchor="middle" class="label ink">X</text>
+
+  <rect class="card" x="354" y="257" width="86" height="86" rx="24"/>
+  <text x="397" y="286" text-anchor="middle" class="small muted">target</text>
+  <text x="397" y="316" text-anchor="middle" class="serif ink">E[h]</text>
+
+  <path class="arrow" d="M196 176 C206 182, 213 189, 219 198"/>
+  <path class="arrow" d="M196 298 C207 289, 213 284, 219 279"/>
+  <path class="arrow" d="M350 239 C360 223, 368 213, 380 201"/>
+  <path class="arrow" d="M398 226 C397 235, 397 243, 397 256"/>
+
+  <text x="240" y="92" text-anchor="middle" class="small muted">flagship application</text>
+  <text x="240" y="116" text-anchor="middle" class="label ink">long-term causal inference</text>
+</svg>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>discreteNPIV long-term causal inference</title>
+    <meta
+      name="description"
+      content="Long-term causal inference with surrogates in discreteNPIV using historical experiment arms as the discrete instrument."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./site.css" />
+    <script src="./site.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <nav class="topbar">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>discreteNPIV</span>
+        </a>
+        <div class="toplinks">
+          <a href="./index.html#install">Install</a>
+          <a href="./index.html#core-npiv">Core NPIV</a>
+          <a href="./long-term.html" aria-current="page">Long-Term Causal Inference</a>
+          <a href="./index.html#api">API</a>
+          <a href="https://arxiv.org/abs/2505.07729">Paper</a>
+          <a href="https://github.com/Larsvanderlaan/discreteNPIV">GitHub</a>
+        </div>
+        <a class="paper-link" href="https://arxiv.org/abs/2505.07729">
+          <span class="paper-link-icon" aria-hidden="true"></span>
+          <span>Paper</span>
+        </a>
+      </nav>
+
+      <header class="hero">
+        <section class="hero-copy">
+          <p class="eyebrow">Flagship Application</p>
+          <div class="hero-grid">
+            <div>
+              <h1>Long-term causal inference with surrogates and historical experiments.</h1>
+              <p class="lede">
+                This page is for users with historical experiments, surrogate
+                outcomes, and a novel experiment whose long-term outcome is not
+                yet available. The package treats historical experiment arms as
+                the instrument and novel surrogate distributions as the target
+                covariate law.
+              </p>
+            </div>
+            <div class="hero-art">
+              <img
+                src="./assets/longterm-badge.svg"
+                alt="Badge showing long-term causal inference with surrogates"
+                width="480"
+                height="480"
+              />
+            </div>
+          </div>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#surrogate-quickstart">Surrogate Quickstart</a>
+            <a class="button button-secondary" href="#encoding">Encoding And Diagnostics</a>
+            <a class="button button-secondary" href="./index.html">Back To Package Overview</a>
+          </div>
+          <ul class="hero-pills">
+            <li>Historical arms become the instrument</li>
+            <li>Novel experiment contributes surrogate outcomes only</li>
+            <li>Support diagnostics are surfaced explicitly</li>
+          </ul>
+        </section>
+
+        <aside class="hero-panel">
+          <section>
+            <p class="mini-label">Inputs</p>
+            <div class="stat-list">
+              <article class="metric-card">
+                <strong>Historical data</strong>
+                <span>
+                  <code>X_hist</code>, <code>Y_hist</code>, and historical arm
+                  assignments provide the surrogate features, long-term outcomes,
+                  and instrument levels.
+                </span>
+              </article>
+              <article class="metric-card">
+                <strong>Novel data</strong>
+                <span>
+                  <code>X_new</code> or
+                  <code>X_new_treated</code> and
+                  <code>X_new_control</code> provide surrogate-only target
+                  distributions for the novel arm or novel experiment.
+                </span>
+              </article>
+              <article class="metric-card">
+                <strong>Outputs</strong>
+                <span>
+                  The wrappers return
+                  <code>LongTermMeanResult</code> or
+                  <code>LongTermEffectResult</code>, each carrying the selected,
+                  npJIVE, and 2SLS summaries together with encoding diagnostics.
+                </span>
+              </article>
+            </div>
+          </section>
+
+          <section>
+            <p class="mini-label">Scope</p>
+            <p class="panel-note">
+              These wrappers translate application-native inputs into the core
+              NPIV estimand rather than replacing the core estimators.
+            </p>
+          </section>
+        </aside>
+      </header>
+
+      <main>
+        <section class="section" id="problem-setup">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Problem Setup</p>
+              <h2>What data situation is this page built for?</h2>
+              <p class="section-intro">
+                The motivating use case is simple: a new experiment with only
+                short-term surrogate outcomes today, and historical experiments
+                where both surrogate and long-term outcomes were observed.
+              </p>
+            </div>
+            <p class="section-side-note">
+              Targets are a long-term mean for one novel arm or a long-term
+              treatment effect for a novel experiment.
+            </p>
+          </div>
+
+          <div class="problem-grid">
+            <article class="card">
+              <h3>Novel experiment</h3>
+              <p>
+                The new experiment may only reveal short-term measures such as
+                clicks, sessions, conversion proxies, or early retention
+                markers.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Historical experiments</h3>
+              <p>
+                Historical experiments provide the joint observation of
+                surrogate outcomes and long-term outcomes, together with
+                experiment-arm assignments that shifted the surrogate
+                distribution.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Target parameter</h3>
+              <p>
+                For one novel arm, the target is <code>E[h(X_new)]</code>. For a
+                novel treated and control arm, the target is
+                <code>E[h(X_new_treated)] - E[h(X_new_control)]</code>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="mapping">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Surrogate-To-NPIV Map</p>
+              <h2>How the application is translated into the core NPIV problem</h2>
+              <p class="section-intro">
+                The package’s wrapper interface is direct: historical experiment
+                arms become the discrete instrument, historical surrogate vectors
+                become <code>X_hist</code>, historical long-term outcomes become
+                <code>Y_hist</code>, and the novel surrogate sample becomes
+                <code>X_new</code>.
+              </p>
+            </div>
+            <p class="section-side-note">
+              The same package can therefore expose both a low-level NPIV
+              interface and an application-native causal wrapper.
+            </p>
+          </div>
+
+          <figure class="figure-frame">
+            <img
+              src="./assets/surrogate-flow.svg"
+              alt="Schematic of the surrogate application mapping to the core NPIV problem"
+              width="960"
+              height="340"
+            />
+            <figcaption class="figure-caption">
+              Historical experiments provide exogenous surrogate variation,
+              while the novel experiment supplies the target surrogate
+              distribution.
+            </figcaption>
+          </figure>
+
+          <div class="grid-2" style="margin-top: 18px;">
+            <article class="card">
+              <h3>Application language</h3>
+              <ul class="api-list">
+                <li>Historical experiment arms -> discrete instrument <code>Z</code></li>
+                <li>Historical surrogate vector -> <code>X_hist</code></li>
+                <li>Historical long-term outcome -> <code>Y_hist</code></li>
+                <li>Novel surrogate sample -> <code>X_new</code></li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Wrapper interface</h3>
+              <ul class="api-list">
+                <li><code>encode_experiment_arms</code></li>
+                <li><code>estimate_long_term_mean_from_surrogates</code></li>
+                <li><code>estimate_long_term_effect_from_surrogates</code></li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="encoding">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Encoding And Diagnostics</p>
+              <h2>Past experiments become the instrument through explicit encoding</h2>
+              <p class="section-intro">
+                The encoding guide is intentionally strict. It distinguishes
+                single-arm historical designs from overlapping historical
+                experiments and treats sparse overlap cells as design issues to
+                surface.
+              </p>
+            </div>
+            <p class="section-side-note">
+              The package does not silently pool or merge sparse overlap
+              categories in v1.
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <article class="surface-card">
+              <p class="mini-label">Single active arm per row</p>
+              <ul class="support-list">
+                <li>
+                  Use <code>mode="single"</code> when each historical unit
+                  belongs to exactly one experiment arm.
+                </li>
+                <li>
+                  Either pass globally unique arm keys like
+                  <code>pricing_test:treatment</code> or pass local arm labels
+                  together with <code>experiment_ids</code>.
+                </li>
+                <li>
+                  Do not pass bare labels such as <code>control</code> or
+                  <code>treatment</code> without telling the package which
+                  experiment they belong to.
+                </li>
+              </ul>
+            </article>
+
+            <article class="surface-card">
+              <p class="mini-label">Overlapping historical experiments</p>
+              <ul class="support-list">
+                <li>
+                  Use <code>mode="overlap"</code> when a historical unit can be
+                  exposed to multiple concurrent experiments.
+                </li>
+                <li>
+                  The full active set of experiment-arm keys is encoded as one
+                  categorical instrument level.
+                </li>
+                <li>
+                  The package canonicalizes overlap encodings and always reports
+                  support diagnostics through counts, singleton levels, and
+                  low-support levels.
+                </li>
+              </ul>
+            </article>
+          </div>
+
+          <aside class="callout" style="margin-top: 18px;">
+            <span class="callout-title">Support diagnostics to inspect</span>
+            <ul class="support-list">
+              <li><code>encoding.counts</code></li>
+              <li><code>encoding.singleton_levels</code></li>
+              <li><code>encoding.low_support_levels</code></li>
+              <li><code>encoding.level_table()</code></li>
+            </ul>
+            <p>
+              If overlap produces many tiny cells, the repository guidance is to
+              restrict to a stable non-overlapping analysis slice, coarsen the
+              experiment structure using domain knowledge, or exclude extremely
+              sparse overlap combinations from the analysis design.
+            </p>
+          </aside>
+        </section>
+
+        <section class="section" id="surrogate-quickstart">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Runnable Example</p>
+              <h2>Estimate a long-term treatment effect from surrogate-only novel data</h2>
+              <p class="section-intro">
+                The snippet below is the surrogate quickstart from the current
+                README. It shows the interface for a novel treated and control
+                arm after historical surrogates and long-term outcomes have been
+                assembled.
+              </p>
+            </div>
+            <p class="section-side-note">
+              The full simulated workflow lives in
+              <code>scripts/reproduce_surrogate_case_study.py</code>.
+            </p>
+          </div>
+
+          <pre class="code-block"><code>import numpy as np
+
+from discreteNPIV import estimate_long_term_effect_from_surrogates
+
+rng = np.random.default_rng(12)
+
+historical_experiment_ids = np.repeat(["exp_a", "exp_b", "exp_c"], 80)
+historical_arm_labels = np.tile(np.repeat(["control", "treatment"], 40), 3)
+
+arm_shift = {
+    "exp_a:control": np.array([0.0, 0.1, -0.1]),
+    "exp_a:treatment": np.array([0.4, 0.2, 0.0]),
+    "exp_b:control": np.array([-0.1, 0.0, 0.1]),
+    "exp_b:treatment": np.array([0.2, 0.3, 0.2]),
+    "exp_c:control": np.array([0.1, -0.2, 0.0]),
+    "exp_c:treatment": np.array([0.3, 0.1, 0.3]),
+}
+theta = np.array([0.8, -0.5, 0.4])
+
+surrogates = []
+outcomes = []
+for experiment_id, arm_label in zip(historical_experiment_ids, historical_arm_labels, strict=True):
+    key = f"{experiment_id}:{arm_label}"
+    confounder = rng.normal(scale=0.35)
+    x = arm_shift[key] + confounder + rng.normal(scale=0.2, size=3)
+    y = x @ theta + 0.5 * confounder + rng.normal(scale=0.2)
+    surrogates.append(x)
+    outcomes.append(y)
+
+X_hist = np.asarray(surrogates)
+Y_hist = np.asarray(outcomes)
+
+X_new_control = rng.normal(loc=[0.05, 0.0, 0.0], scale=0.2, size=(500, 3))
+X_new_treated = rng.normal(loc=[0.25, 0.15, 0.1], scale=0.2, size=(500, 3))
+
+effect = estimate_long_term_effect_from_surrogates(
+    X_hist=X_hist,
+    Y_hist=Y_hist,
+    historical_arms=historical_arm_labels,
+    historical_experiment_ids=historical_experiment_ids,
+    X_new_treated=X_new_treated,
+    X_new_control=X_new_control,
+    n_splits=2,
+    random_state=12,
+)
+
+print(effect.selected.estimate)
+print(effect.selected.ci_lower, effect.selected.ci_upper)
+print(effect.selected.method_name)</code></pre>
+
+          <div class="problem-grid" style="margin-top: 18px;">
+            <article class="card">
+              <h3>Mean output</h3>
+              <p>
+                For a single novel arm, <code>effect.treated_mean.selected</code>
+                or <code>effect.control_mean.selected</code> gives the estimated
+                long-term mean.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Effect output</h3>
+              <p>
+                <code>effect.selected</code> is the estimated long-term
+                treatment effect with a standard error and confidence interval.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Encoding output</h3>
+              <p>
+                <code>effect.encoding</code> records how the historical
+                experiments were encoded and whether some categories are sparse.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="assumptions">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Assumptions In Plain Language</p>
+              <h2>What has to be plausible for the causal interpretation to be credible?</h2>
+              <p class="section-intro">
+                The package does not prove a causal design is valid. It is built
+                for settings where the paper’s assumptions are a plausible
+                approximation.
+              </p>
+            </div>
+            <p class="section-side-note">
+              The package can still run when these conditions are weak, but the
+              causal interpretation becomes weaker.
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <article class="surface-card">
+              <p class="mini-label">Key assumptions</p>
+              <ul class="assumption-list">
+                <li>Historical experiment arms provide exogenous shifts in surrogate outcomes.</li>
+                <li>Historical long-term outcomes help identify the surrogate-to-long-term map.</li>
+                <li>The novel experiment contributes the target surrogate distribution.</li>
+                <li>The novel target has enough support relative to historical experiment-induced surrogate variation.</li>
+              </ul>
+            </article>
+
+            <article class="surface-card">
+              <p class="mini-label">Support and implementation notes</p>
+              <ul class="assumption-list">
+                <li>
+                  The package is most credible when the novel arm’s surrogate
+                  distribution is reasonably represented by historical
+                  experiment-arm variation.
+                </li>
+                <li>
+                  When overlap produces many tiny cells, that is a design-support
+                  problem, not just a nuisance implementation detail.
+                </li>
+                <li>
+                  Leave-one-out or jackknife grouped means are used inside the
+                  npJIVE nuisance construction, while regularization is tuned by
+                  a separate stratified K-fold routine.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="reference-card" id="references">
+          <p class="eyebrow">References And Return Links</p>
+          <h3>Continue with the package overview or the paper</h3>
+          <p>
+            This page covers the surrogate application path; the low-level NPIV
+            interface remains on the main package page.
+          </p>
+          <div class="reference-grid" style="margin-top: 16px;">
+            <a href="./index.html">Return to package overview</a>
+            <a href="https://arxiv.org/abs/2505.07729">Open the paper</a>
+            <a href="https://github.com/Larsvanderlaan/discreteNPIV">Open the GitHub repository</a>
+            <a href="#encoding">Review encoding diagnostics</a>
+          </div>
+          <ul class="reference-list" style="margin-top: 18px;">
+            <li>
+              The content here is drawn from the current repository sources,
+              especially <code>README.md</code>,
+              <code>docs/long_term_surrogate_case_study.md</code>,
+              <code>docs/experiment_encoding.md</code>, and
+              <code>docs/loo_jackknife.md</code>.
+            </li>
+            <li>
+              For the low-level paper-to-code notation map, see the package
+              overview page and the current notation note in the repository.
+            </li>
+          </ul>
+          <div class="footer-links">
+            <a class="footer-link" href="./index.html#core-npiv">Core NPIV</a>
+            <a class="footer-link" href="./index.html#api">API</a>
+            <a class="footer-link" href="#surrogate-quickstart">Surrogate Quickstart</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

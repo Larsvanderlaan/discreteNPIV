@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>discreteNPIV</title>
+    <meta
+      name="description"
+      content="Academic package website for discreteNPIV, a research-oriented Python package for discrete nonparametric instrumental variable inference in the many-weak-instruments regime."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./site.css" />
+    <script src="./site.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <nav class="topbar">
+        <a class="brand" href="./index.html" aria-current="page">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>discreteNPIV</span>
+        </a>
+        <div class="toplinks">
+          <a href="#install">Install</a>
+          <a href="#core-npiv">Core NPIV</a>
+          <a href="./long-term.html">Long-Term Causal Inference</a>
+          <a href="#api">API</a>
+          <a href="https://arxiv.org/abs/2505.07729">Paper</a>
+          <a href="https://github.com/Larsvanderlaan/discreteNPIV">GitHub</a>
+        </div>
+        <a class="paper-link" href="https://arxiv.org/abs/2505.07729">
+          <span class="paper-link-icon" aria-hidden="true"></span>
+          <span>Paper</span>
+        </a>
+      </nav>
+
+      <header class="hero">
+        <section class="hero-copy">
+          <p class="eyebrow">Research Package</p>
+          <div class="hero-grid">
+            <div>
+              <h1>Discrete NPIV inference with many weak instruments.</h1>
+              <p class="lede">
+                <code>discreteNPIV</code> is a research-oriented Python package for
+                discrete nonparametric instrumental variable inference in the
+                many-weak-instruments regime. It accompanies the paper
+                <em>Nonparametric Instrumental Variable Inference with Many Weak
+                Instruments</em> and is organized around two clear entry paths:
+                core discrete NPIV and long-term causal inference with surrogates.
+              </p>
+            </div>
+            <div class="hero-art">
+              <img
+                src="./assets/discretenpiv-badge.svg"
+                alt="discreteNPIV badge showing X, Z, Y, X_new, and npJIVE"
+                width="480"
+                height="480"
+              />
+            </div>
+          </div>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#install">Install</a>
+            <a class="button button-secondary" href="#core-npiv">Core NPIV Quickstart</a>
+            <a class="button button-secondary" href="./long-term.html">Long-Term Application</a>
+          </div>
+          <ul class="hero-pills">
+            <li>Many weak discrete instruments</li>
+            <li>npJIVE and 2SLS side by side</li>
+            <li>Surrogate-based long-term causal inference</li>
+          </ul>
+        </section>
+
+        <aside class="hero-panel">
+          <section>
+            <p class="mini-label">At A Glance</p>
+            <div class="stat-list">
+              <article class="metric-card">
+                <strong>Two entry paths</strong>
+                <span>
+                  Use the core API when you already think in terms of
+                  <code>X</code>, <code>Z</code>, <code>Y</code>, and
+                  <code>X_new</code>; use the surrogate API when your data come
+                  from historical experiments and a novel experiment with only
+                  short-term surrogates.
+                </span>
+              </article>
+              <article class="metric-card">
+                <strong>Core output</strong>
+                <span>
+                  <code>estimate_average_functional(...)</code> returns an
+                  <code>NPIVInferenceResult</code> with <code>selected</code>,
+                  <code>npjive</code>, <code>baseline_2sls</code>,
+                  <code>structural_fit</code>, and <code>dual_fit</code>.
+                </span>
+              </article>
+              <article class="metric-card">
+                <strong>Flagship application</strong>
+                <span>
+                  Long-term causal inference with surrogates is a flagship
+                  application of the package, not the whole package.
+                </span>
+              </article>
+            </div>
+          </section>
+
+          <section>
+            <p class="mini-label">Install From This Checkout</p>
+            <pre class="code-block"><code>python3 -m pip install -e .</code></pre>
+            <p class="panel-note">
+              The README documents this editable install, and the repository
+              scripts use the same source tree during reproduction and
+              validation runs.
+            </p>
+          </section>
+        </aside>
+      </header>
+
+      <main>
+        <section class="section" id="entry-paths">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Start Here</p>
+              <h2>Which interface should you use?</h2>
+              <p class="section-intro">
+                The package separates a low-level NPIV interface from a
+                surrogate application layer. Use the toggle below to choose the
+                route that matches your data.
+              </p>
+            </div>
+            <p class="section-side-note">
+              The homepage stays package-first, while the surrogate application
+              lives on its own page.
+            </p>
+          </div>
+
+          <div class="surface-card" data-interface-toggle>
+            <div class="toggle-row" role="group" aria-label="Interface chooser">
+              <button
+                class="toggle-button is-active"
+                type="button"
+                data-interface-button="core"
+              >
+                Core NPIV
+              </button>
+              <button
+                class="toggle-button"
+                type="button"
+                data-interface-button="longterm"
+              >
+                Long-Term Causal Inference
+              </button>
+            </div>
+
+            <article class="route-panel" data-interface-panel="core">
+              <h3>Use the core API when the NPIV problem is already explicit.</h3>
+              <p>
+                Start here if you already have observed covariates or basis
+                features <code>X</code>, a discrete instrument <code>Z</code>,
+                outcomes <code>Y</code>, and a target covariate sample
+                <code>X_new</code> defining the linear functional of interest.
+              </p>
+              <ul class="api-list">
+                <li><code>fit_structural_nuisance</code></li>
+                <li><code>fit_dual_nuisance</code></li>
+                <li><code>estimate_average_functional</code></li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill">Structural nuisance</span>
+                <span class="pill">Dual / Riesz nuisance</span>
+                <span class="pill">Debiased functional inference</span>
+              </div>
+              <a class="route-cta" href="#core-npiv">Go to core quickstart</a>
+            </article>
+
+            <article class="route-panel is-hidden" data-interface-panel="longterm">
+              <h3>Use the surrogate API when historical experiments are the instrument.</h3>
+              <p>
+                Start here if you have historical experiments with surrogate and
+                long-term outcomes, plus a novel experiment that contributes only
+                surrogate outcomes. The wrappers translate this application
+                structure into the core NPIV estimand.
+              </p>
+              <ul class="api-list">
+                <li><code>encode_experiment_arms</code></li>
+                <li><code>estimate_long_term_mean_from_surrogates</code></li>
+                <li><code>estimate_long_term_effect_from_surrogates</code></li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill">Historical arms -> Z</span>
+                <span class="pill">Novel surrogates -> X_new</span>
+                <span class="pill">Support diagnostics</span>
+              </div>
+              <a class="route-cta" href="./long-term.html">Open long-term page</a>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="install">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Install</p>
+              <h2>Editable install and repo entry points</h2>
+              <p class="section-intro">
+                The repository documents local development and reproduction from
+                the checkout. The install command below matches the README.
+              </p>
+            </div>
+            <p class="section-side-note">
+              The repository layout is already documentation-friendly:
+              <code>src/discreteNPIV</code> for the supported package code,
+              <code>docs</code> for notes, <code>scripts</code> for runnable
+              examples, and <code>tests</code> for validation.
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <h3>Install</h3>
+              <pre class="inline-code"><code>python3 -m pip install -e .</code></pre>
+              <p class="code-note">
+                This is the documented path for working from the current source
+                tree.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Core reproduction</h3>
+              <p>
+                The repository includes paper-style and validation scripts such
+                as <code>scripts/reproduce_small_paper_experiment.py</code> and
+                <code>scripts/evaluate_npjive_validation.py</code>.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Surrogate case study</h3>
+              <p>
+                The long-term application workflow is illustrated in
+                <code>scripts/reproduce_surrogate_case_study.py</code> and
+                expanded on in the separate long-term page.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="core-npiv">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Core NPIV</p>
+              <h2>Fit the structural nuisance, fit the dual nuisance, estimate the functional.</h2>
+              <p class="section-intro">
+                At the core level, the package solves three tasks: fit the
+                structural nuisance for the minimum-norm NPIV solution, fit the
+                dual / Riesz nuisance for a target covariate law, and estimate a
+                debiased average linear functional with uncertainty.
+              </p>
+            </div>
+            <p class="section-side-note">
+              The notation in the docs is consistent throughout:
+              <code>X</code> for observed features or basis representation,
+              <code>Z</code> for the discrete instrument,
+              <code>Y</code> for the observed outcome, and
+              <code>X_new</code> for the target covariate sample.
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <article class="surface-card">
+              <p class="mini-label">Quickstart</p>
+              <pre class="code-block"><code>from discreteNPIV import (
+    estimate_average_functional,
+    fit_dual_nuisance,
+    fit_structural_nuisance,
+    generate_synthetic_data,
+)
+
+data = generate_synthetic_data(
+    n_per_instrument=20,
+    n_instruments=8,
+    n_features=5,
+    n_target_samples=4000,
+    random_state=7,
+)
+
+structural = fit_structural_nuisance(
+    data["X"],
+    data["Z"],
+    data["Y"],
+    n_splits=2,
+    random_state=7,
+)
+
+dual = fit_dual_nuisance(
+    data["X"],
+    data["Z"],
+    data["X_new"],
+    n_splits=2,
+    random_state=7,
+)
+
+result = estimate_average_functional(
+    data["X"],
+    data["Z"],
+    data["Y"],
+    data["X_new"],
+    n_splits=2,
+    random_state=7,
+)
+
+print(structural.selected_method)
+print(dual.selected_method)
+print(result.selected.estimate, result.selected.se)</code></pre>
+            </article>
+
+            <article class="surface-card">
+              <p class="mini-label">Main Entry Points</p>
+              <div class="details-grid">
+                <article class="detail-card">
+                  <h3><code>fit_structural_nuisance</code></h3>
+                  <p>
+                    Fits the primal nuisance for the minimum-norm NPIV solution.
+                  </p>
+                </article>
+                <article class="detail-card">
+                  <h3><code>fit_dual_nuisance</code></h3>
+                  <p>
+                    Fits the dual or Riesz nuisance for the target feature
+                    distribution defined by <code>X_new</code>.
+                  </p>
+                </article>
+                <article class="detail-card">
+                  <h3><code>estimate_average_functional</code></h3>
+                  <p>
+                    Fits both nuisances and returns the debiased average linear
+                    functional with a standard error and confidence interval.
+                  </p>
+                </article>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="workflow">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Workflow</p>
+              <h2>The package is organized around nuisance fitting plus a debiased functional estimator.</h2>
+              <p class="section-intro">
+                The notation map in the repository connects the paper language,
+                the core API, and the surrogate wrappers. At the site level,
+                the estimator stack is the picture below.
+              </p>
+            </div>
+            <p class="section-side-note">
+              In the paper-to-code map, the structural nuisance corresponds to
+              the minimum-norm solution and the dual nuisance corresponds to the
+              Riesz representer for the target functional.
+            </p>
+          </div>
+
+          <figure class="figure-frame">
+            <img
+              src="./assets/npiv-workflow.svg"
+              alt="Workflow diagram for the core NPIV estimator stack"
+              width="960"
+              height="320"
+            />
+            <figcaption class="figure-caption">
+              Observed data and the target covariate sample feed the structural
+              and dual nuisance problems, which are then combined in
+              <code>estimate_average_functional</code>.
+            </figcaption>
+          </figure>
+
+          <div class="problem-grid" style="margin-top: 18px;">
+            <article class="card">
+              <h3>Structural fit</h3>
+              <p>
+                The structural nuisance returns coefficients for the selected
+                estimator, the npJIVE fit, and the 2SLS baseline, together with
+                tuning information and the observed instrument levels.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Dual fit</h3>
+              <p>
+                The dual fit mirrors the same selected / npJIVE / 2SLS structure
+                for the target functional side of the problem.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Inference result</h3>
+              <p>
+                The final <code>NPIVInferenceResult</code> exposes
+                <code>selected</code>, <code>npjive</code>,
+                <code>baseline_2sls</code>, <code>structural_fit</code>, and
+                <code>dual_fit</code>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="theory">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Theory In Plain Language</p>
+              <h2>What “many weak instruments” means here</h2>
+              <p class="section-intro">
+                The package is built for settings where the instrument is
+                discrete and the number of instrument levels can grow with the
+                sample size, while the support available within each instrument
+                level may remain limited.
+              </p>
+            </div>
+            <p class="section-side-note">
+              The motivating example in the README is long-term causal inference:
+              many past experiments, but only a limited number of units in each.
+            </p>
+          </div>
+
+          <div class="theory-grid">
+            <article class="definition-card">
+              <h3>Functionals, not full point identification</h3>
+              <p>
+                The package targets average linear functionals of the
+                minimum-norm NPIV solution. This is why the public API is built
+                around <code>X_new</code> and an average functional rather than a
+                claim of full point identification of the structural map.
+              </p>
+            </article>
+            <article class="definition-card">
+              <h3>npJIVE is the many-instrument correction</h3>
+              <p>
+                The paper-to-code map explicitly identifies npJIVE as the
+                leave-one-out or jackknife many-instrument correction, with a
+                grouped 2SLS baseline fitted alongside it.
+              </p>
+            </article>
+            <article class="definition-card">
+              <h3>LOO and tuning are separate ideas</h3>
+              <p>
+                Group-level leave-one-out means are used inside the nuisance
+                construction, while regularization is selected by a separate
+                stratified K-fold cross-validation routine. The package
+                documentation emphasizes not conflating the two.
+              </p>
+            </article>
+          </div>
+
+          <aside class="callout" style="margin-top: 18px;">
+            <span class="callout-title">Implementation note</span>
+            <p>
+              The implementation uses an explicit singleton-group fallback in
+              the leave-one-out grouped means so the estimator remains
+              numerically defined even when some instrument groups are tiny. The
+              docs also caution that singleton groups should usually be treated
+              carefully from a research-design perspective.
+            </p>
+          </aside>
+        </section>
+
+        <section class="section" id="api">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">API</p>
+              <h2>Public package surface</h2>
+              <p class="section-intro">
+                The current public exports are intentionally compact: core NPIV
+                estimators, surrogate wrappers, grouped utilities, simulation
+                helpers, and typed result objects.
+              </p>
+            </div>
+            <p class="section-side-note">
+              This site adds documentation, not new package interfaces.
+            </p>
+          </div>
+
+          <div class="api-grid">
+            <article class="card">
+              <h3>Core estimators</h3>
+              <ul class="api-list">
+                <li><code>fit_structural_nuisance</code></li>
+                <li><code>fit_dual_nuisance</code></li>
+                <li><code>estimate_average_functional</code></li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Surrogate wrappers</h3>
+              <ul class="api-list">
+                <li><code>encode_experiment_arms</code></li>
+                <li><code>estimate_long_term_mean_from_surrogates</code></li>
+                <li><code>estimate_long_term_effect_from_surrogates</code></li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Utilities and results</h3>
+              <ul class="api-list">
+                <li><code>group_means</code>, <code>leave_one_out_group_means</code>, <code>make_stratified_folds</code></li>
+                <li><code>generate_synthetic_data</code></li>
+                <li><code>NPIVInferenceResult</code>, <code>StructuralFitResult</code>, <code>DualFitResult</code></li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="reference-card" id="references">
+          <p class="eyebrow">References</p>
+          <h3>Paper, repository, and companion page</h3>
+          <p>
+            The long-term application has its own page because it is a distinct
+            entry path built on the same core NPIV estimand.
+          </p>
+          <div class="reference-grid" style="margin-top: 16px;">
+            <a href="https://arxiv.org/abs/2505.07729">Open the paper</a>
+            <a href="https://github.com/Larsvanderlaan/discreteNPIV">Open the GitHub repository</a>
+            <a href="./long-term.html">Open the long-term surrogate page</a>
+            <a href="#core-npiv">Return to core quickstart</a>
+          </div>
+          <ul class="reference-list" style="margin-top: 18px;">
+            <li>
+              The website text is drawn from the current repository sources:
+              <code>README.md</code>, <code>docs/api_reference.md</code>,
+              <code>docs/paper_notation_map.md</code>,
+              <code>docs/experiment_encoding.md</code>, and
+              <code>docs/loo_jackknife.md</code>.
+            </li>
+            <li>
+              For the application layer and design-support discussion, continue
+              to the dedicated long-term page.
+            </li>
+          </ul>
+          <div class="footer-links">
+            <a class="footer-link" href="#install">Install</a>
+            <a class="footer-link" href="#api">API</a>
+            <a class="footer-link" href="./long-term.html">Long-Term Causal Inference</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

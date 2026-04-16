@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 380" role="img" aria-labelledby="title desc">
+  <title id="title">Surrogate application schematic</title>
+  <desc id="desc">Historical experiment arms and outcomes identify a surrogate-to-long-term map, which is then evaluated on novel surrogate distributions.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffaf3"/>
+      <stop offset="100%" stop-color="#eef6f1"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a7b72"/>
+      <stop offset="100%" stop-color="#bb8347"/>
+    </linearGradient>
+    <style>
+      .panel { fill: rgba(255,255,255,0.90); stroke: rgba(23,49,58,0.12); stroke-width: 2; }
+      .panel-strong { fill: url(#bg); stroke: rgba(23,49,58,0.12); stroke-width: 2; }
+      .arrow { fill: none; stroke: url(#accent); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+      .ink { fill: #17313a; }
+      .muted { fill: #5b717a; }
+      .small { font: 600 14px 'Space Grotesk', Arial, sans-serif; letter-spacing: 0.10em; text-transform: uppercase; }
+      .label { font: 700 19px 'Space Grotesk', Arial, sans-serif; }
+      .serif { font: 600 30px 'Source Serif 4', Georgia, serif; letter-spacing: -0.02em; }
+    </style>
+  </defs>
+
+  <rect x="20" y="20" width="1000" height="340" rx="32" fill="url(#bg)" stroke="rgba(23,49,58,0.08)" stroke-width="2"/>
+
+  <rect class="panel" x="54" y="58" width="214" height="112" rx="24"/>
+  <text x="161" y="91" text-anchor="middle" class="small muted">historical arms</text>
+  <text x="161" y="127" text-anchor="middle" class="label ink">experiment arms -> Z</text>
+  <text x="161" y="149" text-anchor="middle" class="small muted">instrument levels</text>
+
+  <rect class="panel" x="54" y="206" width="214" height="112" rx="24"/>
+  <text x="161" y="239" text-anchor="middle" class="small muted">historical outcomes</text>
+  <text x="161" y="275" text-anchor="middle" class="label ink">X_hist and Y_hist</text>
+  <text x="161" y="297" text-anchor="middle" class="small muted">surrogates plus outcomes</text>
+
+  <rect class="panel" x="336" y="116" width="220" height="144" rx="26"/>
+  <text x="446" y="149" text-anchor="middle" class="small muted">core map</text>
+  <text x="446" y="194" text-anchor="middle" class="serif ink">h(X)</text>
+  <text x="446" y="226" text-anchor="middle" class="label ink">surrogate-to-long-term</text>
+  <text x="446" y="248" text-anchor="middle" class="small muted">estimated with NPIV</text>
+
+  <rect class="panel" x="624" y="58" width="180" height="112" rx="24"/>
+  <text x="714" y="91" text-anchor="middle" class="small muted">novel arm</text>
+  <text x="714" y="127" text-anchor="middle" class="label ink">X_new</text>
+  <text x="714" y="149" text-anchor="middle" class="small muted">surrogate-only sample</text>
+
+  <rect class="panel" x="624" y="206" width="180" height="112" rx="24"/>
+  <text x="714" y="239" text-anchor="middle" class="small muted">novel effect</text>
+  <text x="714" y="275" text-anchor="middle" class="label ink">X_t and X_c</text>
+  <text x="714" y="297" text-anchor="middle" class="small muted">treated and control arms</text>
+
+  <rect class="panel-strong" x="858" y="116" width="128" height="144" rx="28"/>
+  <text x="922" y="149" text-anchor="middle" class="small muted">target</text>
+  <text x="922" y="186" text-anchor="middle" class="label ink">Long-term</text>
+  <text x="922" y="210" text-anchor="middle" class="small muted">mean or effect</text>
+  <text x="922" y="234" text-anchor="middle" class="small muted">E[h(X_new)]</text>
+
+  <path class="arrow" d="M268 114 C296 114, 312 133, 336 156"/>
+  <path class="arrow" d="M268 262 C296 262, 312 243, 336 220"/>
+  <path class="arrow" d="M556 156 C584 156, 598 142, 624 114"/>
+  <path class="arrow" d="M556 220 C584 220, 598 234, 624 262"/>
+  <path class="arrow" d="M804 114 C830 134, 842 150, 858 176"/>
+  <path class="arrow" d="M804 262 C830 242, 842 226, 858 200"/>
+</svg>

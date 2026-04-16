@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 360" role="img" aria-labelledby="title desc">
+  <title id="title">Core NPIV workflow schematic</title>
+  <desc id="desc">Observed data and a target sample feed structural and dual nuisances, which are combined in the final debiased functional estimator.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffaf3"/>
+      <stop offset="100%" stop-color="#eef6f1"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a7b72"/>
+      <stop offset="100%" stop-color="#bb8347"/>
+    </linearGradient>
+    <style>
+      .panel { fill: rgba(255,255,255,0.90); stroke: rgba(23,49,58,0.12); stroke-width: 2; }
+      .panel-strong { fill: url(#bg); stroke: rgba(23,49,58,0.12); stroke-width: 2; }
+      .arrow { fill: none; stroke: url(#accent); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+      .ink { fill: #17313a; }
+      .muted { fill: #5b717a; }
+      .small { font: 600 14px 'Space Grotesk', Arial, sans-serif; letter-spacing: 0.10em; text-transform: uppercase; }
+      .label { font: 700 19px 'Space Grotesk', Arial, sans-serif; }
+      .serif { font: 600 30px 'Source Serif 4', Georgia, serif; letter-spacing: -0.02em; }
+    </style>
+  </defs>
+
+  <rect x="20" y="20" width="1000" height="320" rx="32" fill="url(#bg)" stroke="rgba(23,49,58,0.08)" stroke-width="2"/>
+
+  <rect class="panel" x="56" y="96" width="184" height="170" rx="26"/>
+  <text x="148" y="130" text-anchor="middle" class="small muted">observed data</text>
+  <text x="148" y="175" text-anchor="middle" class="serif ink">X, Z, Y</text>
+  <text x="148" y="214" text-anchor="middle" class="label ink">observed sample</text>
+
+  <rect class="panel" x="300" y="62" width="230" height="106" rx="24"/>
+  <text x="415" y="94" text-anchor="middle" class="small muted">primal nuisance</text>
+  <text x="415" y="127" text-anchor="middle" class="label ink">Structural nuisance</text>
+  <text x="415" y="149" text-anchor="middle" class="small muted">fit_structural_nuisance</text>
+
+  <rect class="panel" x="300" y="190" width="230" height="106" rx="24"/>
+  <text x="415" y="222" text-anchor="middle" class="small muted">dual nuisance</text>
+  <text x="415" y="255" text-anchor="middle" class="label ink">Dual / Riesz nuisance</text>
+  <text x="415" y="277" text-anchor="middle" class="small muted">fit_dual_nuisance</text>
+
+  <rect class="panel" x="590" y="96" width="170" height="170" rx="26"/>
+  <text x="675" y="130" text-anchor="middle" class="small muted">target law</text>
+  <text x="675" y="176" text-anchor="middle" class="serif ink">X_new</text>
+  <text x="675" y="214" text-anchor="middle" class="label ink">target sample</text>
+
+  <rect class="panel-strong" x="806" y="96" width="170" height="170" rx="28"/>
+  <text x="891" y="130" text-anchor="middle" class="small muted">final estimator</text>
+  <text x="891" y="176" text-anchor="middle" class="label ink">Debiased functional</text>
+  <text x="891" y="206" text-anchor="middle" class="small muted">selected / npjive / 2sls</text>
+
+  <path class="arrow" d="M240 146 C266 146, 278 128, 300 115"/>
+  <path class="arrow" d="M240 216 C266 216, 278 234, 300 247"/>
+  <path class="arrow" d="M530 115 C555 115, 568 130, 590 146"/>
+  <path class="arrow" d="M530 247 C555 247, 568 230, 590 216"/>
+  <path class="arrow" d="M760 181 C778 181, 786 181, 806 181"/>
+</svg>
