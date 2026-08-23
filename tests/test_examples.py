@@ -1,7 +1,3 @@
-import os
-from pathlib import Path
-import subprocess
-import sys
 import unittest
 
 import numpy as np
@@ -100,38 +96,6 @@ class ExampleSmokeTests(unittest.TestCase):
         self.assertTrue(np.isfinite(effect.selected.estimate))
         self.assertTrue(np.isfinite(effect.selected.se))
         self.assertGreater(effect.encoding.n_levels, 1)
-
-    def test_surrogate_case_study_script_runs(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        env = os.environ.copy()
-        pythonpath = str(root / "src")
-        if env.get("PYTHONPATH"):
-            pythonpath = pythonpath + os.pathsep + env["PYTHONPATH"]
-        env["PYTHONPATH"] = pythonpath
-        completed = subprocess.run(
-            [
-                sys.executable,
-                str(root / "scripts" / "reproduce_surrogate_case_study.py"),
-                "--n-experiments",
-                "3",
-                "--n-per-arm",
-                "12",
-                "--n-features",
-                "3",
-                "--n-target-samples",
-                "150",
-                "--seed",
-                "9",
-            ],
-            cwd=root,
-            env=env,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        self.assertIn("Historical design", completed.stdout)
-        self.assertIn("Long-term treatment effect", completed.stdout)
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -93,3 +93,30 @@ def validate_n_splits(n_splits: int, min_group_count: int) -> int:
             f"Received n_splits={n_splits} and min_group_count={min_group_count}."
         )
     return int(n_splits)
+
+
+def validate_fold_group_support(Z: np.ndarray, folds: np.ndarray, *, min_count: int = 2) -> None:
+    """Validate that every instrument level has enough observations in each fold."""
+
+    Z = np.asarray(Z, dtype=int)
+    folds = np.asarray(folds, dtype=int)
+    if Z.shape != folds.shape:
+        raise ValueError("Z and folds must have the same shape.")
+    if min_count < 1:
+        raise ValueError("min_count must be positive.")
+
+    groups = np.unique(Z)
+    for fold_id in np.unique(folds):
+        fold_mask = folds == fold_id
+        fold_groups, fold_counts = np.unique(Z[fold_mask], return_counts=True)
+        count_by_group = {int(group): int(count) for group, count in zip(fold_groups, fold_counts, strict=True)}
+        sparse_groups = [int(group) for group in groups if count_by_group.get(int(group), 0) < min_count]
+        if sparse_groups:
+            preview = ", ".join(str(group) for group in sparse_groups[:8])
+            if len(sparse_groups) > 8:
+                preview += ", ..."
+            raise ValueError(
+                "npJIVE fold construction requires at least "
+                f"{min_count} observations from every instrument level in every fold. "
+                f"Fold {int(fold_id)} is sparse for instrument levels: {preview}."
+            )

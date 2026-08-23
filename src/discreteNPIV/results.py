@@ -13,6 +13,10 @@ class RegularizationChoice:
     lambda_value: float
     gamma: float
     cv_risk: float
+    operator_noise_floor: float = np.nan
+    operator_noise_margin: float = np.nan
+    generalized_system_eigen_min: float = np.nan
+    generalized_system_condition: float = np.nan
 
 
 @dataclass(frozen=True)

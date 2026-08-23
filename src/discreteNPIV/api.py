@@ -4,12 +4,18 @@ import numpy as np
 
 from ._ci import normal_ci
 from ._linear_solvers import prediction_variance, solve_regularized_system
-from ._tuning import EstimationTerms, FoldTerms, select_regularization
+from ._tuning import (
+    EstimationTerms,
+    FoldTerms,
+    OperatorStabilityConstraint,
+    select_regularization,
+)
 from .grouping import group_counts, group_means, leave_one_out_group_means, make_stratified_folds
 from .results import DualFitResult, FunctionalEstimate, NPIVInferenceResult, StructuralFitResult
 from .validation import (
     encode_instruments,
     validate_n_splits,
+    validate_fold_group_support,
     validate_regularization_grid,
     validate_selection,
     validate_target_features,
@@ -25,7 +31,26 @@ def _penalty_matrix(X: np.ndarray) -> np.ndarray:
     return X.T @ X / X.shape[0]
 
 
+def _constant_count_npjive_quadratic(X: np.ndarray, Z: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
+    counts = group_counts(Z)
+    if np.any(counts <= 1) or np.any(counts != counts[0]):
+        return None
+    group_sums = group_means(X, Z, n_groups=counts.shape[0]) * counts[:, None]
+    n_per_group = float(counts[0])
+    quadratic = (group_sums.T @ group_sums - X.T @ X) / ((n_per_group - 1.0) * X.shape[0])
+    return quadratic, group_sums
+
+
 def _primal_npjive_terms(X: np.ndarray, Z: np.ndarray, Y: np.ndarray) -> EstimationTerms:
+    fast = _constant_count_npjive_quadratic(X, Z)
+    if fast is not None:
+        quadratic, group_sums = fast
+        counts = group_counts(Z)
+        group_y_sums = group_means(Y, Z, n_groups=counts.shape[0]) * counts
+        n_per_group = float(counts[0])
+        linear = (group_sums.T @ group_y_sums - X.T @ Y) / ((n_per_group - 1.0) * X.shape[0])
+        return EstimationTerms(quadratic=quadratic, linear=linear, penalty=_penalty_matrix(X))
+
     loo_X = leave_one_out_group_means(X, Z)
     loo_Y = leave_one_out_group_means(Y, Z)
     n_obs = X.shape[0]
@@ -45,6 +70,11 @@ def _primal_2sls_terms(X: np.ndarray, Z: np.ndarray, Y: np.ndarray) -> Estimatio
 
 
 def _dual_npjive_terms(X: np.ndarray, Z: np.ndarray, X_new: np.ndarray) -> EstimationTerms:
+    fast = _constant_count_npjive_quadratic(X, Z)
+    if fast is not None:
+        quadratic, _ = fast
+        return EstimationTerms(quadratic=quadratic, linear=np.mean(X_new, axis=0), penalty=_penalty_matrix(X))
+
     loo_X = leave_one_out_group_means(X, Z)
     n_obs = X.shape[0]
     quadratic = (loo_X.T @ X + X.T @ loo_X) / (2.0 * n_obs)
@@ -139,6 +169,11 @@ def fit_structural_nuisance(
     gamma_grid: object = None,
     selection: str = "adaptive",
     random_state: int | None = None,
+    max_fold_coef_norm: float | None = None,
+    min_system_eigenvalue: float | None = None,
+    max_system_condition: float | None = None,
+    strict_regularization_constraints: bool = False,
+    npjive_operator_stability: OperatorStabilityConstraint | None = None,
 ) -> StructuralFitResult:
     """
     Fit the structural nuisance for the minimum-norm NPIV solution.
@@ -166,27 +201,39 @@ def fit_structural_nuisance(
     gamma_values = validate_regularization_grid("gamma_grid", gamma_grid, DEFAULT_GAMMA_GRID)
 
     folds = make_stratified_folds(encoded.codes, n_splits=n_splits, random_state=random_state)
+    validate_fold_group_support(encoded.codes, folds, min_count=2)
     fold_terms_npjive = _build_fold_terms_primal(X_arr, encoded.codes, Y_arr, folds)
     fold_terms_2sls = _build_fold_terms_primal_2sls(X_arr, encoded.codes, Y_arr, folds)
+    terms_npjive = _primal_npjive_terms(X_arr, encoded.codes, Y_arr)
+    terms_2sls = _primal_2sls_terms(X_arr, encoded.codes, Y_arr)
 
     tune_npjive, _ = select_regularization(
         fold_terms_npjive,
         method_name="npjive",
         lambda_grid=lambda_values,
         gamma_grid=gamma_values,
+        max_fold_coef_norm=max_fold_coef_norm,
+        min_system_eigenvalue=min_system_eigenvalue,
+        max_system_condition=max_system_condition,
+        strict_constraints=strict_regularization_constraints,
+        operator_stability=npjive_operator_stability,
+        full_terms=terms_npjive,
     )
     tune_2sls, _ = select_regularization(
         fold_terms_2sls,
         method_name="2sls",
         lambda_grid=lambda_values,
         gamma_grid=gamma_values,
+        max_fold_coef_norm=max_fold_coef_norm,
+        min_system_eigenvalue=min_system_eigenvalue,
+        max_system_condition=max_system_condition,
+        strict_constraints=strict_regularization_constraints,
+        full_terms=terms_2sls,
     )
 
-    terms_npjive = _primal_npjive_terms(X_arr, encoded.codes, Y_arr)
     system_npjive = terms_npjive.quadratic + tune_npjive.lambda_value * terms_npjive.penalty + tune_npjive.gamma * np.eye(X_arr.shape[1])
     coef_npjive = solve_regularized_system(system_npjive, terms_npjive.linear)
 
-    terms_2sls = _primal_2sls_terms(X_arr, encoded.codes, Y_arr)
     system_2sls = terms_2sls.quadratic + tune_2sls.lambda_value * terms_2sls.penalty + tune_2sls.gamma * np.eye(X_arr.shape[1])
     coef_2sls = solve_regularized_system(system_2sls, terms_2sls.linear)
 
@@ -214,6 +261,11 @@ def fit_dual_nuisance(
     gamma_grid: object = None,
     selection: str = "adaptive",
     random_state: int | None = None,
+    max_fold_coef_norm: float | None = None,
+    min_system_eigenvalue: float | None = None,
+    max_system_condition: float | None = None,
+    strict_regularization_constraints: bool = False,
+    npjive_operator_stability: OperatorStabilityConstraint | None = None,
 ) -> DualFitResult:
     """
     Fit the dual / Riesz nuisance associated with the target covariate law.
@@ -237,27 +289,39 @@ def fit_dual_nuisance(
     gamma_values = validate_regularization_grid("gamma_grid", gamma_grid, DEFAULT_GAMMA_GRID)
 
     folds = make_stratified_folds(encoded.codes, n_splits=n_splits, random_state=random_state)
+    validate_fold_group_support(encoded.codes, folds, min_count=2)
     fold_terms_npjive = _build_fold_terms_dual(X_arr, encoded.codes, X_new_arr, folds)
     fold_terms_2sls = _build_fold_terms_dual_2sls(X_arr, encoded.codes, X_new_arr, folds)
+    terms_npjive = _dual_npjive_terms(X_arr, encoded.codes, X_new_arr)
+    terms_2sls = _dual_2sls_terms(X_arr, encoded.codes, X_new_arr)
 
     tune_npjive, _ = select_regularization(
         fold_terms_npjive,
         method_name="npjive",
         lambda_grid=lambda_values,
         gamma_grid=gamma_values,
+        max_fold_coef_norm=max_fold_coef_norm,
+        min_system_eigenvalue=min_system_eigenvalue,
+        max_system_condition=max_system_condition,
+        strict_constraints=strict_regularization_constraints,
+        operator_stability=npjive_operator_stability,
+        full_terms=terms_npjive,
     )
     tune_2sls, _ = select_regularization(
         fold_terms_2sls,
         method_name="2sls",
         lambda_grid=lambda_values,
         gamma_grid=gamma_values,
+        max_fold_coef_norm=max_fold_coef_norm,
+        min_system_eigenvalue=min_system_eigenvalue,
+        max_system_condition=max_system_condition,
+        strict_constraints=strict_regularization_constraints,
+        full_terms=terms_2sls,
     )
 
-    terms_npjive = _dual_npjive_terms(X_arr, encoded.codes, X_new_arr)
     system_npjive = terms_npjive.quadratic + tune_npjive.lambda_value * terms_npjive.penalty + tune_npjive.gamma * np.eye(X_arr.shape[1])
     coef_npjive = solve_regularized_system(system_npjive, terms_npjive.linear)
 
-    terms_2sls = _dual_2sls_terms(X_arr, encoded.codes, X_new_arr)
     system_2sls = terms_2sls.quadratic + tune_2sls.lambda_value * terms_2sls.penalty + tune_2sls.gamma * np.eye(X_arr.shape[1])
     coef_2sls = solve_regularized_system(system_2sls, terms_2sls.linear)
 

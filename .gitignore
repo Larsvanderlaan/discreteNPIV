@@ -6,6 +6,10 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .venv/
+.cache/
 build/
 dist/
-
+outputs/
+/AGENTS.md
+/submission/
+/experiments/generated/
