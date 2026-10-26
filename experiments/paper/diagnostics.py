@@ -259,7 +259,6 @@ def run_replication(
         methods = list(REPORT_METHODS)
         metadata = _fit_metadata(bundle, config)
         extra_by_method = {
-            "single_split_npjive_star": bundle.star_diagnostics.get("single_split_effect", {}),
             "loo_npjive_star": bundle.star_diagnostics.get("effect", {}),
         }
         rows = [

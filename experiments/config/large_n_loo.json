@@ -1,0 +1,98 @@
+{
+  "inference": "LOO cell means with disjoint-pair variance; existing nuisance tuning",
+  "configs": [
+    {
+      "cell_id": "large_n_400_n400_persistent",
+      "n_replications": 200,
+      "n_instruments": 400,
+      "n_per_instrument": 400,
+      "regime": "persistent",
+      "seed_base": 94000000,
+      "growth_path": "large_n400",
+      "n_new_per_arm": 6000,
+      "n_splits": 5,
+      "n_fourier_pairs": 18,
+      "truth_fourier_pairs": 128,
+      "truth_fourier_amplitude": 0.18,
+      "truth_fourier_smoothness": 1.5,
+      "feature_seed": 31415,
+      "signal_scale": 0.8,
+      "kernel_bandwidth": 0.08,
+      "control_location": 0.35,
+      "treated_location": 0.65,
+      "surrogate_noise_scale": 0.6,
+      "confounding_scale": 0.7,
+      "outcome_confounding_loading": 0.7,
+      "outcome_noise_scale": 0.5,
+      "novel_shift": 3.0,
+      "novel_channel_effect": 0.1,
+      "lambda_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03
+      ],
+      "gamma_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03
+      ],
+      "structural_lambda_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03,
+        0.02,
+        0.015,
+        0.01,
+        0.0075,
+        0.005
+      ],
+      "structural_gamma_grid": [
+        0.01,
+        0.005,
+        0.003,
+        0.002,
+        0.001
+      ],
+      "dual_lambda_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03,
+        0.02,
+        0.015,
+        0.01,
+        0.0075
+      ],
+      "dual_gamma_grid": [
+        0.01,
+        0.005,
+        0.003,
+        0.002,
+        0.001
+      ],
+      "projection_lambda_grid": null,
+      "projection_gamma_grid": null,
+      "projection_method": "spectral_npjive",
+      "projection_multiplier_replications": 199,
+      "projection_multiplier_quantile": 0.95,
+      "inverse_stability_multiplier_replications": 99,
+      "inverse_stability_multiplier_quantile": 0.95,
+      "inverse_stability_margin": 1.25,
+      "projection_max_fold_coef_norm": 10000.0,
+      "projection_min_system_eigenvalue": 1e-10,
+      "projection_max_system_condition": 10000000000.0,
+      "star_nuisance_max_fold_coef_norm": 10000.0,
+      "star_nuisance_min_system_eigenvalue": 1e-10,
+      "star_nuisance_max_system_condition": 10000.0,
+      "tuning_stability_rule": "generalized_positive_condition_le_10000",
+      "config_hash": "7afea8e4babe"
+    }
+  ]
+}

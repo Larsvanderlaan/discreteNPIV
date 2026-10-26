@@ -54,8 +54,15 @@ class PaperExperimentTests(unittest.TestCase):
         self.assertEqual({row["method"] for row in rows}, REPORTED_METHODS["main"])
         self.assertTrue(all(np.isfinite(float(row["estimate"])) for row in rows))
         self.assertTrue(all(np.isfinite(float(row["se"])) for row in rows))
+        for row in rows:
+            if row["method"].startswith("loo_"):
+                self.assertEqual(row["reported_inference_method"], "loo_disjoint_pairs")
+                self.assertAlmostEqual(
+                    row["se"] ** 2,
+                    row["if_historical_variance"] + row["target_sample_variance"],
+                )
 
-    def test_checked_summaries_are_complete_and_minimal(self) -> None:
+    def test_preserved_summaries_are_complete_and_minimal(self) -> None:
         expected = {"main": (60, 500), "large_n": (4, 200)}
         for study, (expected_rows, expected_replications) in expected.items():
             path = ROOT / "experiments" / "results" / study / "summary.csv"
@@ -65,7 +72,10 @@ class PaperExperimentTests(unittest.TestCase):
                 columns = set(reader.fieldnames or ())
 
             self.assertEqual(len(rows), expected_rows)
-            self.assertEqual({row["method"] for row in rows}, REPORTED_METHODS[study])
+            legacy_methods = {"single_split_npjive", "single_split_npjive_star", "loo_npjive", "loo_npjive_star"}
+            if study == "main":
+                legacy_methods.add("2sls_dml")
+            self.assertEqual({row["method"] for row in rows}, legacy_methods)
             self.assertEqual({int(row["n_replications"]) for row in rows}, {expected_replications})
             self.assertEqual({int(row["failed_replications"]) for row in rows}, {0})
             self.assertNotIn("run_command", columns)

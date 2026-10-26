@@ -20,8 +20,6 @@ DEFAULT_GAMMA_GRID = (3.0, 1.0, 0.3, 0.1, 0.03)
 VALID_REGIMES = {"covered", "vanishing", "persistent", "boundary"}
 REPORT_METHODS = (
     "2sls_dml",
-    "single_split_npjive",
-    "single_split_npjive_star",
     "loo_npjive",
     "loo_npjive_star",
 )
@@ -232,6 +230,7 @@ class StarMeanFit:
     estimate: FunctionalEstimate
     diagnostics: dict[str, Any]
     target_gradient_coef: np.ndarray
+    historical_variance: dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -245,16 +244,12 @@ class CrossFittedStructuralScores:
 
 
 @dataclass(frozen=True)
-class SingleSplitMeanFit:
-    """Single-split cell-mean estimator with cross-fitted shared nuisances."""
+class LOOMeanFit:
+    """LOO mean estimate and predictions for its symmetric pair kernel."""
 
     estimate: FunctionalEstimate
-    structural_scores: CrossFittedStructuralScores
-    fold_duals: dict[int, DualFitResult]
-    correction_weights: np.ndarray
+    beta_predictions: np.ndarray
     target_predictions: np.ndarray
-    train_mask: np.ndarray
-    eval_mask: np.ndarray
 
 
 def _jsonable(value: Any) -> Any:

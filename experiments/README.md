@@ -6,22 +6,23 @@ general-purpose estimator API can be reviewed independently.
 
 ## Designs
 
-`config/main.json` contains the twelve fixed-cell designs:
+`config/main_loo.json` contains the twelve fixed-cell designs:
 
 - numbers of instrument levels (K\in\{50,100,200,400\});
 - 30 historical observations per instrument level;
 - point-identified, asymptotically identified, and persistent-gap regimes;
 - 500 replications per design.
 
-`config/large_n.json` contains the large-cell design with (K=400), 400
+`config/large_n_loo.json` contains the large-cell design with (K=400), 400
 historical observations per instrument level, a persistent identification gap,
 and 200 replications.
 
 Every run reports only the estimators shown in the paper:
 
 - nonsplit 2SLS-DML (main designs only);
-- single-split DML-JIVE and DML-JIVE*;
 - leave-one-out DML-JIVE and DML-JIVE*.
+
+Both JIVE estimators use every observation with leave-one-out cell averages. Their historical variance is calculated from the symmetric pair kernel and products involving four distinct observations. The target-sample variance is added separately. Nuisance tuning remains five-fold.
 
 The starred estimators learn the projection from the observed samples. The
 prespecified tuning rules use observed-data risks and system-stability checks;
@@ -48,9 +49,11 @@ python -m experiments.run \
 ```
 
 Generated rows and summaries are written under `experiments/generated/`. The
-runner accepts `--resume` and writes one part file per design.
+runner accepts `--resume`, checkpoints every replication, and writes one part file per design. A resumed run must match the stored configuration and source snapshot.
 
 ## Make figures and tables
+
+The earlier configurations (`config/main.json` and `config/large_n.json`) and summaries in `results/` are preserved while the LOO rerun completes. The new seeds and replication counts are frozen in `config/loo_run_plan.json`.
 
 The checked summaries in `results/` are the sources for the paper artifacts.
 Regenerate them from a new run by passing the corresponding `summary.csv`

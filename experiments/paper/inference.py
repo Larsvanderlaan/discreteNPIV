@@ -7,7 +7,6 @@ from discreteNPIV.api import _primal_npjive_terms
 from discreteNPIV.grouping import leave_one_out_group_means
 from discreteNPIV.results import StructuralFitResult
 
-from .model import CrossFittedStructuralScores
 
 
 def _star_component_diagnostics(base_influence: np.ndarray, correction: np.ndarray) -> dict[str, float]:
@@ -191,56 +190,6 @@ def _structural_linearized_effect_scores(
     scores = treated_scores - control_scores
     if extra_scores is not None:
         scores = scores + np.asarray(extra_scores, dtype=float)
-    return scores
-
-
-def _cross_fitted_single_split_structural_effect_scores(
-    *,
-    structural_scores: CrossFittedStructuralScores,
-    X: np.ndarray,
-    Z: np.ndarray,
-    Y: np.ndarray,
-    X_treated: np.ndarray,
-    X_control: np.ndarray,
-    treated_weights: np.ndarray,
-    control_weights: np.ndarray,
-    score_mask: np.ndarray,
-) -> np.ndarray:
-    """Linearize fold-specific structural fits for single-split scores."""
-
-    score_arr = np.asarray(score_mask, dtype=bool)
-    n_scored = int(np.sum(score_arr))
-    if n_scored < 1:
-        raise ValueError("single-split structural linearization needs scored rows.")
-    scores = np.zeros(X.shape[0], dtype=float)
-    for fold_id in np.unique(structural_scores.folds):
-        nuisance_eval = structural_scores.folds == fold_id
-        active = score_arr & nuisance_eval
-        active_treated_weights = np.where(active, treated_weights, 0.0)
-        active_control_weights = np.where(active, control_weights, 0.0)
-        target_weight = float(np.sum(active) / n_scored)
-        fit_mask = ~nuisance_eval
-        structural_fit = structural_scores.fold_fits[int(fold_id)]
-        scores += _structural_linearized_mean_scores(
-            structural_fit=structural_fit,
-            X=X,
-            Z=Z,
-            Y=Y,
-            X_new=X_treated,
-            correction_weights=active_treated_weights,
-            fit_mask=fit_mask,
-            target_gradient_weight=target_weight,
-        )
-        scores -= _structural_linearized_mean_scores(
-            structural_fit=structural_fit,
-            X=X,
-            Z=Z,
-            Y=Y,
-            X_new=X_control,
-            correction_weights=active_control_weights,
-            fit_mask=fit_mask,
-            target_gradient_weight=target_weight,
-        )
     return scores
 
 

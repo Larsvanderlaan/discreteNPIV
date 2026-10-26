@@ -1,0 +1,16 @@
+{
+  "frozen_date": "2026-10-26",
+  "estimator": "LOO DML-JIVE and LOO DML-JIVE*",
+  "nuisance_tuning": "unchanged five-fold observed-data CV",
+  "historical_variance": "symmetric LOO kernel, disjoint-four-observation products",
+  "target_sample_variance": "retained existing gradient-based independent-target contribution",
+  "main_namespace": 90000000,
+  "large_n_namespace": 94000000,
+  "validation_namespace": 92000000,
+  "main_replications_per_design": 500,
+  "large_n_replications": 200,
+  "posthoc_exclusions": false,
+  "failure_rows": "retain all",
+  "stability": "unchanged generalized positive condition number <=10000",
+  "validation": "exact algebraic tests; finite outputs; no truth or coverage-based tuning"
+}
