@@ -44,8 +44,9 @@ The large-cell study is computationally intensive. For a fast end-to-end check:
 ```bash
 python -m experiments.run \
   --study main \
-  --cell projection_confirmatory_longterm_50_n30_covered \
-  --replications 1
+  --config experiments/config/smoke_loo.json \
+  --stage validation \
+  --output-dir experiments/generated/smoke
 ```
 
 Generated rows and summaries are written under `experiments/generated/`. The
@@ -53,7 +54,7 @@ runner accepts `--resume`, checkpoints every replication, and writes one part fi
 
 ## Make figures and tables
 
-The earlier configurations (`config/main.json` and `config/large_n.json`) and summaries in `results/` are preserved while the LOO rerun completes. The new seeds and replication counts are frozen in `config/loo_run_plan.json`.
+The checked summaries use the LOO configurations and the seeds frozen in `config/loo_run_plan.json`. The earlier configurations (`config/main.json` and `config/large_n.json`) remain available for provenance.
 
 The checked summaries in `results/` are the sources for the paper artifacts.
 Regenerate them from a new run by passing the corresponding `summary.csv`
@@ -80,7 +81,8 @@ source manifest to `experiments/generated/figures/`.
 - `paper/design.py`: feature map and data-generating process;
 - `paper/nuisance.py`: cross-fitted structural and dual inverse problems;
 - `paper/projection.py`: data-driven npJIVE projection estimator;
-- `paper/inference.py`: influence-function and variance calculations;
+- `paper/inference.py`: target-sample variance calculations;
+- `paper/cell_variance.py`: symmetric LOO kernels and historical variance;
 - `paper/estimation.py`: reported estimators;
 - `paper/diagnostics.py`: replication records and failure handling;
 - `paper/reporting.py`: aggregation into bias, RMSE, coverage, and SE/SD;

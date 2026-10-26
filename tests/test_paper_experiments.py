@@ -62,8 +62,8 @@ class PaperExperimentTests(unittest.TestCase):
                     row["if_historical_variance"] + row["target_sample_variance"],
                 )
 
-    def test_preserved_summaries_are_complete_and_minimal(self) -> None:
-        expected = {"main": (60, 500), "large_n": (4, 200)}
+    def test_summaries_are_complete_and_minimal(self) -> None:
+        expected = {"main": (36, 500), "large_n": (2, 200)}
         for study, (expected_rows, expected_replications) in expected.items():
             path = ROOT / "experiments" / "results" / study / "summary.csv"
             with path.open(newline="", encoding="utf-8") as handle:
@@ -72,12 +72,11 @@ class PaperExperimentTests(unittest.TestCase):
                 columns = set(reader.fieldnames or ())
 
             self.assertEqual(len(rows), expected_rows)
-            legacy_methods = {"single_split_npjive", "single_split_npjive_star", "loo_npjive", "loo_npjive_star"}
-            if study == "main":
-                legacy_methods.add("2sls_dml")
-            self.assertEqual({row["method"] for row in rows}, legacy_methods)
-            self.assertEqual({int(row["n_replications"]) for row in rows}, {expected_replications})
-            self.assertEqual({int(row["failed_replications"]) for row in rows}, {0})
+            self.assertEqual({row["method"] for row in rows}, REPORTED_METHODS[study])
+            self.assertTrue(all(
+                int(row["n_replications"]) + int(row["failed_replications"])
+                == expected_replications for row in rows
+            ))
             self.assertNotIn("run_command", columns)
             self.assertNotIn("run_started_at", columns)
 

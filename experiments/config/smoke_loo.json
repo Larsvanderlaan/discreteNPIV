@@ -1,0 +1,88 @@
+{
+  "stage": "validation",
+  "configs": [
+    {
+      "cell_id": "projection_confirmatory_longterm_50_n30_covered",
+      "n_replications": 1,
+      "n_instruments": 50,
+      "n_per_instrument": 30,
+      "regime": "covered",
+      "seed_base": 92000000,
+      "growth_path": "fixed_n30",
+      "n_new_per_arm": 750,
+      "n_splits": 5,
+      "n_fourier_pairs": 8,
+      "truth_fourier_pairs": 128,
+      "truth_fourier_amplitude": 0.18,
+      "truth_fourier_smoothness": 1.5,
+      "feature_seed": 31415,
+      "signal_scale": 0.8,
+      "kernel_bandwidth": 0.08,
+      "control_location": 0.35,
+      "treated_location": 0.65,
+      "surrogate_noise_scale": 0.6,
+      "confounding_scale": 0.7,
+      "outcome_confounding_loading": 0.7,
+      "outcome_noise_scale": 0.5,
+      "novel_shift": 3.0,
+      "novel_channel_effect": 0.2,
+      "lambda_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03
+      ],
+      "gamma_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03
+      ],
+      "structural_lambda_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03
+      ],
+      "structural_gamma_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03
+      ],
+      "dual_lambda_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03
+      ],
+      "dual_gamma_grid": [
+        3.0,
+        1.0,
+        0.3,
+        0.1,
+        0.03
+      ],
+      "projection_lambda_grid": null,
+      "projection_gamma_grid": null,
+      "projection_method": "spectral_npjive",
+      "projection_multiplier_replications": 199,
+      "projection_multiplier_quantile": 0.95,
+      "inverse_stability_multiplier_replications": 99,
+      "inverse_stability_multiplier_quantile": 0.95,
+      "inverse_stability_margin": 1.25,
+      "projection_max_fold_coef_norm": 10000.0,
+      "projection_min_system_eigenvalue": 1e-10,
+      "projection_max_system_condition": 10000000000.0,
+      "star_nuisance_max_fold_coef_norm": 10000.0,
+      "star_nuisance_min_system_eigenvalue": 1e-10,
+      "star_nuisance_max_system_condition": 10000.0,
+      "tuning_stability_rule": "generalized_positive_condition_le_10000"
+    }
+  ]
+}

@@ -72,8 +72,9 @@ commands. A one-replication smoke run is:
 ```bash
 python -m experiments.run \
   --study main \
-  --cell projection_confirmatory_longterm_50_n30_covered \
-  --replications 1
+  --config experiments/config/smoke_loo.json \
+  --stage validation \
+  --output-dir experiments/generated/smoke
 ```
 
 Generate every reported figure and table from the checked summary files with:

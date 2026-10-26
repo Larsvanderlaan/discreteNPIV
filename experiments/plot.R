@@ -40,14 +40,11 @@ method_label <- function(x) {
   out[x == "2sls_dml"] <- "nonsplit 2SLS-DML"
   out[x == "loo_npjive"] <- "LOO DML-JIVE"
   out[x == "loo_npjive_star"] <- "LOO DML-JIVE*"
-  out[x == "single_split_npjive"] <- "single-split DML-JIVE"
-  out[x == "single_split_npjive_star"] <- "single-split DML-JIVE*"
   factor(
     out,
     levels = c(
       "nonsplit 2SLS-DML",
-      "LOO DML-JIVE", "LOO DML-JIVE*",
-      "single-split DML-JIVE", "single-split DML-JIVE*"
+      "LOO DML-JIVE", "LOO DML-JIVE*"
     )
   )
 }
@@ -101,8 +98,6 @@ write_latex_table <- function(df, path, caption, label) {
 
 main_methods <- c(
   "2sls_dml",
-  "single_split_npjive",
-  "single_split_npjive_star",
   "loo_npjive",
   "loo_npjive_star"
 )
@@ -181,31 +176,23 @@ main$Method <- method_label(main$method)
 coverage_ref <- data.frame(Regime = factor(levels(main$Regime), levels = levels(main$Regime)))
 method_colors <- c(
   "nonsplit 2SLS-DML" = "#D95F02",
-  "single-split DML-JIVE" = "#7570B3",
-  "single-split DML-JIVE*" = "#66A61E",
   "LOO DML-JIVE" = "#1B9E77",
   "LOO DML-JIVE*" = "#E7298A"
 )
 method_shapes <- c(
   "nonsplit 2SLS-DML" = 17,
-  "single-split DML-JIVE" = 15,
-  "single-split DML-JIVE*" = 8,
   "LOO DML-JIVE" = 16,
   "LOO DML-JIVE*" = 18
 )
 method_breaks <- c(
   "nonsplit 2SLS-DML",
   "LOO DML-JIVE",
-  "LOO DML-JIVE*",
-  "single-split DML-JIVE",
-  "single-split DML-JIVE*"
+  "LOO DML-JIVE*"
 )
 method_legend_labels <- expression(
   "nonsplit 2SLS-DML (target"~tau*")",
   "LOO DML-JIVE (target"~tau*")",
-  "LOO DML-JIVE* (target"~tau[K]*")",
-  "single-split DML-JIVE (target"~tau*")",
-  "single-split DML-JIVE* (target"~tau[K]*")"
+  "LOO DML-JIVE* (target"~tau[K]*")"
 )
 
 main_coverage_plot <- ggplot(main, aes(K, Coverage, color = Method, shape = Method)) +
@@ -247,8 +234,8 @@ main_rmse_plot <- ggplot(main, aes(K, RMSE, color = Method, shape = Method)) +
     shape = NULL
   ) +
   guides(
-    color = guide_legend(nrow = 2, byrow = TRUE),
-    shape = guide_legend(nrow = 2, byrow = TRUE)
+    color = guide_legend(nrow = 1, byrow = TRUE),
+    shape = guide_legend(nrow = 1, byrow = TRUE)
   ) +
   theme_bw(base_size = 10) +
   theme(
@@ -287,18 +274,10 @@ projection <- subset(
     regime == "persistent" &
     num(n_instruments) == 400 &
     num(n_per_instrument) == 400 &
-    method %in% c(
-      "loo_npjive", "loo_npjive_star",
-      "single_split_npjive", "single_split_npjive_star"
-    )
+    method %in% c("loo_npjive", "loo_npjive_star")
 )
 projection$Method <- method_label(projection$method)
-projection$Estimator <- ifelse(
-  grepl("^loo_", projection$method),
-  "LOO",
-  "single split"
-)
-projection$Estimator <- factor(projection$Estimator, levels = c("LOO", "single split"))
+projection$Estimator <- factor(rep("LOO", nrow(projection)), levels = "LOO")
 projection$Correction <- ifelse(
   grepl("_star$", projection$method),
   "DML-JIVE* (projection corrected)",
@@ -354,7 +333,7 @@ projection_plot <- ggplot(projection_long, aes(Estimator, Value, fill = Correcti
   ) +
   facet_wrap(~Metric, scales = "free_y", nrow = 1) +
   scale_fill_manual(values = c(
-    "DML-JIVE" = "#7570B3",
+    "DML-JIVE" = "#1B9E77",
     "DML-JIVE* (projection corrected)" = "#E7298A"
   )) +
   labs(
